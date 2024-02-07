@@ -18,27 +18,24 @@ public struct SwiftyInput: View {
         self._text = text
         self.props = props
         self.isSecure = props.isSecure
-        UITextField.appearance().tintColor = props.cursorColor
+        UITextField.appearance().tintColor = props.cursorColor.uiColor()
     }
 
     public var body: some View {
-        getContent()
-    }
-    
-    private func getContent() -> some View {
         VStack(spacing: 0) {
             HStack (spacing: 0){
                 if let leftView = props.leftView {
                     leftView
-                        .foregroundStyle(props.leftViewColor)
+                        .fgStyle(props.leftViewColor)
                         .padding(.trailing, props.leftViewSpace)
                 }
 
                 getField(isSecure: isSecure)
                     .focused($isFocused)
-                    .foregroundStyle(props.textColor)
+                    .fgStyle(props.textColor)
                     .textFieldStyle(.plain)
                     .padding(.vertical, 15)
+                    
                 if !self.text.trim().isEmpty {
                     Button {
                         self.text = ""
@@ -53,7 +50,7 @@ public struct SwiftyInput: View {
                 }
                 if let rightView = props.rightView {
                     rightView
-                        .foregroundStyle(props.rightViewColor)
+                        .fgStyle(props.rightViewColor)
                         .padding(.leading, props.rightViewSpace)
                 }
                 
@@ -66,38 +63,42 @@ public struct SwiftyInput: View {
                 withAnimation {
                     Rectangle()
                         .frame(height: isFocused ? props.borderProps.width: 1.0)
-                        .foregroundStyle(props.borderProps.color)
+                        .fgStyle(props.borderProps.color)
                 }
                 
             }
         }
     }
     
+    
     @ViewBuilder
     private func getField(isSecure: Bool) -> some View {
         if isSecure {
-            SecureField("", text: $text, prompt: getPlaceholder())
+            if #available(iOS 15.0, *) {
+                SecureField("", text: $text, prompt: getPlaceholder())
+            } else {
+                ZStack {
+                    if text.isEmpty{
+                        getPlaceholder()
+                    }
+                    SecureField("", text: $text)
+                }
+            }
         } else {
-            TextField("", text: $text, prompt: getPlaceholder())
+            if #available(iOS 15.0, *) {
+                TextField("", text: $text, prompt: getPlaceholder())
+            } else {
+                ZStack {
+                    if text.isEmpty{
+                        getPlaceholder()
+                    }
+                    TextField("", text: $text)
+                        .foregroundColor(.blue)
+                }
+                
+            }
         }
     }
-    
-    @ViewBuilder
-    private func getSecureIconView()-> some View {
-        Button {
-            self.isSecure.toggle()
-        } label: {
-            Image(systemName: getSecureIconName())
-                .tint(ThemeColors.SwiftyInut.rightView)
-        }
-        .padding(.leading, 8)
-    }
-    private func getSecureIconName() -> String {
-        let icons = props.secureIcons.split(separator: ",")
-        
-        return isSecure ? "\(icons[0])": "\(icons[1])"
-    }
-    
     private func getPlaceholder() -> Text? {
         if #available(iOS 17.0, *) {
             Text(props.placeholder)
@@ -111,6 +112,25 @@ public struct SwiftyInput: View {
         }
     }
     
+    @ViewBuilder
+    private func getSecureIconView()-> some View {
+        Button {
+            self.isSecure.toggle()
+        } label: {
+            if let iconName = getSecureIconName() {
+                Image(systemName: iconName)
+                    .tint(ThemeColors.SwiftyInut.rightView)
+            }
+        }
+        .padding(.leading, 8)
+    }
+    private func getSecureIconName() -> String? {
+        let icons = props.secureIcons.split(separator: ",")
+        if nil == icons[0] || nil == icons[1] {
+            return nil
+        }
+        return isSecure ? "\(icons[0])": "\(icons[1])"
+    }
 }
 
 #if DEBUG
@@ -150,7 +170,7 @@ public struct InputFieldProps {
     public var rightViewColor: Color
     public var clearIcon: Image
     public var secureIcons: String
-    public var cursorColor: UIColor
+    public var cursorColor: Color
     public var textColor: Color
     public var placeholderColor: Color
     public var clearIconColor: Color
@@ -161,7 +181,7 @@ public struct InputFieldProps {
     public var style: InputFieldStyle
     
     
-    public init(placeholder: String = "Placeholder...", leftView: AnyView? = nil, rightView: AnyView? = nil, leftViewSpace: CGFloat = 5.0, rightViewSpace: CGFloat = 5.0, leftViewColor: Color = ThemeColors.SwiftyInut.leftView, rightViewColor: Color = ThemeColors.SwiftyInut.rightView, clearIcon: Image = Image(systemName: "multiply"), secureIcons: String = "eye.fill,eye.slash.fill", cursorColor: UIKit.UIColor = UIColor(ThemeColors.SwiftyInut.tint), textColor: Color = ThemeColors.SwiftyInut.forground, placeholderColor: Color = ThemeColors.SwiftyInut.tint, clearIconColor: Color = ThemeColors.SwiftyInut.tint, backgroundColor: Color = ThemeColors.SwiftyInut.background, borderProps: BorderProps = BorderProps(color: ThemeColors.SwiftyInut.border, width: 2.0), font: Font  = ThemeFonts.primary, isSecure: Bool = false, style: InputFieldStyle = .UNDERLINED) {
+    public init(placeholder: String = "Placeholder...", leftView: AnyView? = nil, rightView: AnyView? = nil, leftViewSpace: CGFloat = 5.0, rightViewSpace: CGFloat = 5.0, leftViewColor: Color = ThemeColors.SwiftyInut.leftView, rightViewColor: Color = ThemeColors.SwiftyInut.rightView, clearIcon: Image = Image(systemName: "multiply"), secureIcons: String = "eye.fill,eye.slash.fill", cursorColor: Color = ThemeColors.SwiftyInut.tint, textColor: Color = ThemeColors.SwiftyInut.forground, placeholderColor: Color = ThemeColors.SwiftyInut.tint, clearIconColor: Color = ThemeColors.SwiftyInut.tint, backgroundColor: Color = ThemeColors.SwiftyInut.background, borderProps: BorderProps = BorderProps(color: ThemeColors.SwiftyInut.border, width: 2.0), font: Font  = ThemeFonts.primary, isSecure: Bool = false, style: InputFieldStyle = .UNDERLINED) {
         
         self.placeholder = placeholder
         self.leftView = leftView

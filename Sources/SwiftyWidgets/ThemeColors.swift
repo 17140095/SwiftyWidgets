@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 
-@available(iOS 15.0, *)
+@available(iOS 13.0, *)
 public enum ThemeColors {
     public static var primaryDark = Color(hex: "#5C8984")
     public static var primary = Color(hex: "#92C7CF")
@@ -34,7 +34,7 @@ public enum ThemeColors {
     }
 }
 
-@available(iOS 15.0, *)
+@available(iOS 13.0, *)
 extension ThemeColors {
     public static var bgColor = Color(hex: "#34495e")
 }

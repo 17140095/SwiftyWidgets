@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-@available(iOS 15.0, *)
+@available(iOS 13.0, *)
 public enum ThemeFonts {
     public static var primary = Font.body
 }

@@ -14,6 +14,39 @@ extension String {
     }
 }
 
+extension UIColor {
+    var hexString: String? {
+        var red: CGFloat = 0
+        var green: CGFloat = 0
+        var blue: CGFloat = 0
+        var alpha: CGFloat = 0
+
+        let multiplier = CGFloat(255.999999)
+
+        guard self.getRed(&red, green: &green, blue: &blue, alpha: &alpha) else {
+            return nil
+        }
+
+        if alpha == 1.0 {
+            return String(
+                format: "#%02lX%02lX%02lX",
+                Int(red * multiplier),
+                Int(green * multiplier),
+                Int(blue * multiplier)
+            )
+        }
+        else {
+            return String(
+                format: "#%02lX%02lX%02lX%02lX",
+                Int(red * multiplier),
+                Int(green * multiplier),
+                Int(blue * multiplier),
+                Int(alpha * multiplier)
+            )
+        }
+    }
+}
+
 @available(iOS 13.0, *)
 extension Color {
     public init(hex: String) {
@@ -41,12 +74,37 @@ extension Color {
         )
     }
     
+    func uiColor() -> UIColor {
+
+        if #available(iOS 14.0, *) {
+            return UIColor(self)
+        }
+
+        let components = self.components()
+        return UIColor(red: components.r, green: components.g, blue: components.b, alpha: components.a)
+    }
+
+    private func components() -> (r: CGFloat, g: CGFloat, b: CGFloat, a: CGFloat) {
+
+        let scanner = Scanner(string: self.description.trimmingCharacters(in: CharacterSet.alphanumerics.inverted))
+        var hexNumber: UInt64 = 0
+        var r: CGFloat = 0.0, g: CGFloat = 0.0, b: CGFloat = 0.0, a: CGFloat = 0.0
+
+        let result = scanner.scanHexInt64(&hexNumber)
+        if result {
+            r = CGFloat((hexNumber & 0xff000000) >> 24) / 255
+            g = CGFloat((hexNumber & 0x00ff0000) >> 16) / 255
+            b = CGFloat((hexNumber & 0x0000ff00) >> 8) / 255
+            a = CGFloat(hexNumber & 0x000000ff) / 255
+        }
+        return (r, g, b, a)
+    }
     public func overlaying<V: View>(_ view: V) -> some View {
         return view.overlay(self)
     }
 }
 
-@available(iOS 15.0, *)
+@available(iOS 13.0, *)
 extension View {
     
     public func keyboardAwarePadding() -> some View {
@@ -106,41 +164,65 @@ extension View {
     }
     
     @ViewBuilder
+    public func focused(_ condition: Binding<Bool>) -> some View {
+        
+    }
+    
+    @ViewBuilder
+    public func fgStyle(_ style: Color) -> some View{
+        if #available(iOS 15.0, *) {
+            self.foregroundStyle(style)
+        } else {
+            self.foregroundColor(style)
+        }
+    }
+    
+    @ViewBuilder
     public func overlay<V>( if condition: Bool, @ViewBuilder content: () -> V) -> some View where V : View {
         
         if condition {
-            self.overlay(content: content)
+            if #available(iOS 15.0, *) {
+                self.overlay(content: content)
+            } else {
+                ZStack{
+                    self
+                    content()
+                }
+            }
         } else {
             self
         }
     }
     
     @ViewBuilder
-    public func tint<S>(_ tint: Color, if condition: Bool = false) -> some View where S : ShapeStyle {
-        //        if condition {
-        //            if #available(iOS 16.0, *) {
-        //                self.tint(tint)
-        //            } else {
-        //                // Fallback on earlier versions
-        //            }
-        //        } else {
-        //            self
-        //        }
-        
+    public func tintColor(_ color: Color) -> some View {
         if #available(iOS 16.0, *) {
-            self.tint(condition ? tint : .clear)
+            self.tint(color)
         } else {
-            // Fallback for iOS versions lower than 16
             self.overlay(
-                Group {
-                    if condition {
-                        tint.overlaying(self)
-                    } else {
-                        self
-                    }
-                }
+                color
+                    .mask(self)
+                    .foregroundColor(color)
             )
         }
+    }
+    
+    @ViewBuilder
+    public func tintColor(_ color: Color, if condition: Bool) -> some View {
+        if condition {
+            if #available(iOS 16.0, *) {
+                self.tint(color)
+            } else {
+                self.overlay(
+                    color
+                        .mask(self)
+                        .foregroundColor(color)
+                )
+            }
+        } else {
+            self
+        }
+        
     }
     
 }
