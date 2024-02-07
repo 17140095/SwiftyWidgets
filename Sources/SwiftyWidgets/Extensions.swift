@@ -1,0 +1,146 @@
+//
+//  Extensions.swift
+//  PodTest
+//
+//  Created by Ali Raza on 01/02/2024.
+//
+
+import Foundation
+import SwiftUI
+
+extension String {
+    public func trim() -> String {
+        self.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+}
+
+@available(iOS 13.0, *)
+extension Color {
+    public init(hex: String) {
+        let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
+        var int: UInt64 = 0
+        Scanner(string: hex).scanHexInt64(&int)
+        let a, r, g, b: UInt64
+        switch hex.count {
+        case 3: // RGB (12-bit)
+            (a, r, g, b) = (255, (int >> 8) * 17, (int >> 4 & 0xF) * 17, (int & 0xF) * 17)
+        case 6: // RGB (24-bit)
+            (a, r, g, b) = (255, int >> 16, int >> 8 & 0xFF, int & 0xFF)
+        case 8: // ARGB (32-bit)
+            (a, r, g, b) = (int >> 24, int >> 16 & 0xFF, int >> 8 & 0xFF, int & 0xFF)
+        default:
+            (a, r, g, b) = (1, 1, 1, 0)
+        }
+
+        self.init(
+            .sRGB,
+            red: Double(r) / 255,
+            green: Double(g) / 255,
+            blue:  Double(b) / 255,
+            opacity: Double(a) / 255
+        )
+    }
+    
+    public func overlaying<V: View>(_ view: V) -> some View {
+        return view.overlay(self)
+    }
+}
+
+@available(iOS 15.0, *)
+extension View {
+    
+    public func keyboardAwarePadding() -> some View {
+        ModifiedContent(
+            content: self,
+            modifier: KeyboardHeightModifier()
+        )
+    }
+    @ViewBuilder
+    public func border(props: BorderProps, if condition: Bool) -> some View {
+        if condition {
+            self.border(props.color, width: props.width)
+        } else {
+            self
+        }
+    }
+    @ViewBuilder
+    public func border<S>(_ content: S, width: CGFloat = 1, if condition: Bool) -> some View where S : ShapeStyle {
+        if condition {
+           self.border(content, width: width)
+        } else {
+            self
+        }
+    }
+    
+    @ViewBuilder
+    public func textFieldStyle<S>(style: S, if condition: Bool) -> some View where S : TextFieldStyle {
+        if condition {
+            self.textFieldStyle(style)
+        } else {
+            self
+        }
+    }
+    
+    @ViewBuilder
+    public func padding(_ edges: Edge.Set = .all, _ length: CGFloat? = nil, if condition: Bool) -> some View {
+        if condition {
+            self.padding(edges, length)
+        } else {
+            self
+        }
+    }
+    
+    @ViewBuilder
+    public func shadow(props: ShadowProps, if condition: Bool = true) -> some View {
+        if condition, props.apply {
+            self.shadow(color: props.color, radius: props.radius, x: props.x, y: props.y)
+        } else {
+            self
+        }
+    }
+    
+    
+    @ViewBuilder
+    public func background<S>(_ style: Color, if condition: Bool = true) -> some View where S : ShapeStyle {
+        self.background(condition ? style : .clear )
+    }
+    
+    @ViewBuilder
+    public func overlay<V>( if condition: Bool, @ViewBuilder content: () -> V) -> some View where V : View {
+        
+        if condition {
+            self.overlay(content: content)
+        } else {
+            self
+        }
+    }
+    
+    @ViewBuilder
+    public func tint<S>(_ tint: Color, if condition: Bool = false) -> some View where S : ShapeStyle {
+        //        if condition {
+        //            if #available(iOS 16.0, *) {
+        //                self.tint(tint)
+        //            } else {
+        //                // Fallback on earlier versions
+        //            }
+        //        } else {
+        //            self
+        //        }
+        
+        if #available(iOS 16.0, *) {
+            self.tint(condition ? tint : .clear)
+        } else {
+            // Fallback for iOS versions lower than 16
+            self.overlay(
+                Group {
+                    if condition {
+                        tint.overlaying(self)
+                    } else {
+                        self
+                    }
+                }
+            )
+        }
+    }
+    
+}

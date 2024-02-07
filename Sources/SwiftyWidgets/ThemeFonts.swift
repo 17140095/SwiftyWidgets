@@ -1,0 +1,13 @@
+//
+//  ThemeFonts.swift
+//  PodTest
+//
+//  Created by Ali Raza on 02/02/2024.
+//
+
+import SwiftUI
+
+@available(iOS 15.0, *)
+public enum ThemeFonts {
+    public static var primary = Font.body
+}
