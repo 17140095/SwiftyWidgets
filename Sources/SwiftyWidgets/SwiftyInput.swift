@@ -30,7 +30,7 @@ public struct SwiftyInput: View {
                         .padding(.trailing, props.leftViewSpace)
                 }
 
-                getField()
+                getFieldView()
                     .focused($isFocused)
                     .fgStyle(props.textColor)
                     .textFieldStyle(.plain)
@@ -72,60 +72,60 @@ public struct SwiftyInput: View {
     
     
     @ViewBuilder
-    private func getField() -> some View {
+    private func getFieldView() -> some View {
         if isSecure {
             if #available(iOS 15.0, *) {
-                SecureField("", text: $text, prompt: getPlaceholder())
-                    .onChange(of: text, perform: { value in
-                        if props.limit > -1 {
-                            text = String(value.prefix(props.limit))
-                        }
-                    })
+                getField(forSecure: true)
             } else {
                 ZStack {
                     if text.isEmpty{
                         getPlaceholder()
                     }
-                    SecureField("", text: $text)
-                        .onChange(of: text, perform: { value in
-                            if props.limit > -1 {
-                                text = String(value.prefix(props.limit))
-                            }
-                        })
+                    getField(forSecure: true)
                 }
             }
         } else {
             if #available(iOS 15.0, *) {
-                TextField("", text: $text, prompt: getPlaceholder())
-                    .onChange(of: text, perform: { value in
-                        if props.limit > -1 {
-                            text = String(value.prefix(props.limit))
-                        }
-                    })
+                getField(forSecure: false)
             } else {
                 ZStack {
                     if text.isEmpty{
                         getPlaceholder()
                     }
-                    TextField("", text: $text)
-                        .onChange(of: text, perform: { value in
-                            if props.limit > -1 {
-                                text = String(value.prefix(props.limit))
-                            }
-                        })
+                    getField(forSecure: false)
                         .foregroundColor(.blue)
                 }
                 
             }
         }
     }
+    
+    private func getField(forSecure: Bool) -> some View {
+        Group {
+            if forSecure {
+                SecureField("", text: $text)
+                    .onChange(of: text, perform: { value in
+                        if props.limit > -1 {
+                            text = String(value.prefix(props.limit))
+                        }
+                    })
+            } else {
+                TextField("", text: $text)
+                    .onChange(of: text, perform: { value in
+                        if props.limit > -1 {
+                            text = String(value.prefix(props.limit))
+                        }
+                    })
+            }
+        }.padding(0)
+    }
+    
     private func getPlaceholder() -> Text? {
         if #available(iOS 17.0, *) {
             Text(props.placeholder)
                 .foregroundStyle(props.placeholderColor)
                 .font(props.font)
         } else {
-            // Fallback on earlier versions
             Text(props.placeholder)
                 .foregroundColor(props.placeholderColor)
                 .font(props.font)
