@@ -128,7 +128,7 @@ public struct SwiftyButtonProps {
     public var border: BorderProps
     public var style: SwiftyButtonStyle
     
-    public init(font: Font = ThemeFonts.SwiftyButton.font, foregroundColor: Color = ThemeColors.SwiftyButton.forground, backgroundColor: Color = ThemeColors.SwiftyButton.background, cornerRadius: CGFloat = 10.0, paddingV: CGFloat = 15.0, paddingH: CGFloat = 15.0, icon: AnyView = AnyView(Image(systemName: "cross")), iconPos: SwiftyButtonIconPos = .LEFT, iconSpacing: CGFloat = 3.0, iconColor: Color = ThemeColors.SwiftyButton.forground, showIcon: Bool = true, shadow: ShadowProps = ShadowProps(), border: BorderProps = BorderProps(color: ThemeColors.SwiftyButton.border), style: SwiftyButtonStyle = .OUTLINED) {
+    public init(font: Font = ThemeFonts.SwiftyButton.font, foregroundColor: Color = ThemeColors.SwiftyButton.forground, backgroundColor: Color = ThemeColors.SwiftyButton.background, cornerRadius: CGFloat = 10.0, paddingV: CGFloat = 15.0, paddingH: CGFloat = 15.0, icon: AnyView = AnyView(Image(systemName: "cross")), iconPos: SwiftyButtonIconPos = .LEFT, iconSpacing: CGFloat = 3.0, iconColor: Color = ThemeColors.SwiftyButton.forground, showIcon: Bool = true, shadow: ShadowProps = ShadowProps(), border: BorderProps = BorderProps(color: ThemeColors.SwiftyButton.border), style: SwiftyButtonStyle = .FILLED) {
         self.font = font
         self.foregroundColor = foregroundColor
         self.backgroundColor = backgroundColor
