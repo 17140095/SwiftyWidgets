@@ -178,23 +178,6 @@ extension View {
     }
     
     @ViewBuilder
-    public func overlay<V>( if condition: Bool, @ViewBuilder content: () -> V) -> some View where V : View {
-        
-        if condition {
-            if #available(iOS 15.0, *) {
-                self.overlay(content: content)
-            } else {
-                ZStack{
-                    self
-                    content()
-                }
-            }
-        } else {
-            self
-        }
-    }
-    
-    @ViewBuilder
     public func tintColor(_ color: Color) -> some View {
         if #available(iOS 16.0, *) {
             self.tint(color)
