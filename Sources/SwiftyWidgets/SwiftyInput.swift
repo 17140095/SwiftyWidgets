@@ -76,23 +76,43 @@ public struct SwiftyInput: View {
         if isSecure {
             if #available(iOS 15.0, *) {
                 SecureField("", text: $text, prompt: getPlaceholder())
+                    .onChange(of: text, perform: { value in
+                        if props.limit > -1 {
+                            text = String(value.prefix(props.limit))
+                        }
+                    })
             } else {
                 ZStack {
                     if text.isEmpty{
                         getPlaceholder()
                     }
                     SecureField("", text: $text)
+                        .onChange(of: text, perform: { value in
+                            if props.limit > -1 {
+                                text = String(value.prefix(props.limit))
+                            }
+                        })
                 }
             }
         } else {
             if #available(iOS 15.0, *) {
                 TextField("", text: $text, prompt: getPlaceholder())
+                    .onChange(of: text, perform: { value in
+                        if props.limit > -1 {
+                            text = String(value.prefix(props.limit))
+                        }
+                    })
             } else {
                 ZStack {
                     if text.isEmpty{
                         getPlaceholder()
                     }
                     TextField("", text: $text)
+                        .onChange(of: text, perform: { value in
+                            if props.limit > -1 {
+                                text = String(value.prefix(props.limit))
+                            }
+                        })
                         .foregroundColor(.blue)
                 }
                 
@@ -140,7 +160,7 @@ struct TestContentView: View {
 
     var body: some View {
         VStack {
-            SwiftyInput(text: $text, props: InputFieldProps(showClearIcon: false))
+            SwiftyInput(text: $text, props: InputFieldProps(showClearIcon: false, limit: -1))
             SwiftyInput(text: $text, props: InputFieldProps(leftView: AnyView(Image(systemName: "person"))))
             SwiftyInput(text: $text, props: InputFieldProps(leftView: AnyView(Image(systemName: "person"))))
             SwiftyInput(text: $text, props: InputFieldProps(leftView: AnyView(Text("🔒")), rightView: AnyView(Image(systemName: "eyeglasses")), isSecure: true))
@@ -180,9 +200,9 @@ public struct InputFieldProps {
     public var font: Font
     public var isSecure: Bool
     public var style: InputFieldStyle
+    public var limit: Int
     
-    
-    public init(placeholder: String = "Placeholder...", leftView: AnyView? = nil, rightView: AnyView? = nil, leftViewSpace: CGFloat = 5.0, rightViewSpace: CGFloat = 5.0, leftViewColor: Color = ThemeColors.SwiftyInut.leftView, rightViewColor: Color = ThemeColors.SwiftyInut.rightView, clearIcon: Image = Image(systemName: "multiply"), showClearIcon: Bool = true, secureIcons: String = "eye.fill,eye.slash.fill", cursorColor: Color = ThemeColors.SwiftyInut.tint, textColor: Color = ThemeColors.SwiftyInut.forground, placeholderColor: Color = ThemeColors.SwiftyInut.tint, clearIconColor: Color = ThemeColors.SwiftyInut.tint, backgroundColor: Color = ThemeColors.SwiftyInut.background, borderProps: BorderProps = BorderProps(color: ThemeColors.SwiftyInut.border, width: 2.0), font: Font  = ThemeFonts.SwiftyInput.font, isSecure: Bool = false, style: InputFieldStyle = .UNDERLINED) {
+    public init(placeholder: String = "Placeholder...", leftView: AnyView? = nil, rightView: AnyView? = nil, leftViewSpace: CGFloat = 5.0, rightViewSpace: CGFloat = 5.0, leftViewColor: Color = ThemeColors.SwiftyInut.leftView, rightViewColor: Color = ThemeColors.SwiftyInut.rightView, clearIcon: Image = Image(systemName: "multiply"), showClearIcon: Bool = true, secureIcons: String = "eye.fill,eye.slash.fill", cursorColor: Color = ThemeColors.SwiftyInut.tint, textColor: Color = ThemeColors.SwiftyInut.forground, placeholderColor: Color = ThemeColors.SwiftyInut.tint, clearIconColor: Color = ThemeColors.SwiftyInut.tint, backgroundColor: Color = ThemeColors.SwiftyInut.background, borderProps: BorderProps = BorderProps(color: ThemeColors.SwiftyInut.border, width: 2.0), font: Font  = ThemeFonts.SwiftyInput.font, isSecure: Bool = false, style: InputFieldStyle = .UNDERLINED, limit: Int = -1) {
         
         self.placeholder = placeholder
         self.leftView = leftView
@@ -203,6 +223,7 @@ public struct InputFieldProps {
         self.font = font
         self.isSecure = isSecure
         self.style = style
+        self.limit = limit
     }
     
     public func showBorder()-> Bool {
