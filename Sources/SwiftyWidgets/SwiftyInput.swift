@@ -36,7 +36,7 @@ public struct SwiftyInput: View {
                     .textFieldStyle(.plain)
                     .padding(.vertical, 15)
                     
-                if !self.text.trim().isEmpty {
+                if !self.text.trim().isEmpty && props.showClearIcon {
                     Button {
                         self.text = ""
                     } label: {
@@ -140,7 +140,7 @@ struct TestContentView: View {
 
     var body: some View {
         VStack {
-            SwiftyInput(text: $text, props: InputFieldProps(isSecure: false))
+            SwiftyInput(text: $text, props: InputFieldProps(showClearIcon: false))
             SwiftyInput(text: $text, props: InputFieldProps(leftView: AnyView(Image(systemName: "person"))))
             SwiftyInput(text: $text, props: InputFieldProps(leftView: AnyView(Image(systemName: "person"))))
             SwiftyInput(text: $text, props: InputFieldProps(leftView: AnyView(Text("🔒")), rightView: AnyView(Image(systemName: "eyeglasses")), isSecure: true))
@@ -169,6 +169,7 @@ public struct InputFieldProps {
     public var leftViewColor: Color
     public var rightViewColor: Color
     public var clearIcon: Image
+    public var showClearIcon: Bool
     public var secureIcons: String
     public var cursorColor: Color
     public var textColor: Color
@@ -181,7 +182,7 @@ public struct InputFieldProps {
     public var style: InputFieldStyle
     
     
-    public init(placeholder: String = "Placeholder...", leftView: AnyView? = nil, rightView: AnyView? = nil, leftViewSpace: CGFloat = 5.0, rightViewSpace: CGFloat = 5.0, leftViewColor: Color = ThemeColors.SwiftyInut.leftView, rightViewColor: Color = ThemeColors.SwiftyInut.rightView, clearIcon: Image = Image(systemName: "multiply"), secureIcons: String = "eye.fill,eye.slash.fill", cursorColor: Color = ThemeColors.SwiftyInut.tint, textColor: Color = ThemeColors.SwiftyInut.forground, placeholderColor: Color = ThemeColors.SwiftyInut.tint, clearIconColor: Color = ThemeColors.SwiftyInut.tint, backgroundColor: Color = ThemeColors.SwiftyInut.background, borderProps: BorderProps = BorderProps(color: ThemeColors.SwiftyInut.border, width: 2.0), font: Font  = ThemeFonts.primary, isSecure: Bool = false, style: InputFieldStyle = .UNDERLINED) {
+    public init(placeholder: String = "Placeholder...", leftView: AnyView? = nil, rightView: AnyView? = nil, leftViewSpace: CGFloat = 5.0, rightViewSpace: CGFloat = 5.0, leftViewColor: Color = ThemeColors.SwiftyInut.leftView, rightViewColor: Color = ThemeColors.SwiftyInut.rightView, clearIcon: Image = Image(systemName: "multiply"), showClearIcon: Bool = true, secureIcons: String = "eye.fill,eye.slash.fill", cursorColor: Color = ThemeColors.SwiftyInut.tint, textColor: Color = ThemeColors.SwiftyInut.forground, placeholderColor: Color = ThemeColors.SwiftyInut.tint, clearIconColor: Color = ThemeColors.SwiftyInut.tint, backgroundColor: Color = ThemeColors.SwiftyInut.background, borderProps: BorderProps = BorderProps(color: ThemeColors.SwiftyInut.border, width: 2.0), font: Font  = ThemeFonts.primary, isSecure: Bool = false, style: InputFieldStyle = .UNDERLINED) {
         
         self.placeholder = placeholder
         self.leftView = leftView
@@ -192,6 +193,7 @@ public struct InputFieldProps {
         self.rightViewColor = rightViewColor
         self.clearIcon = clearIcon
         self.secureIcons = secureIcons
+        self.showClearIcon = showClearIcon
         self.cursorColor = cursorColor
         self.textColor = textColor
         self.placeholderColor = placeholderColor
