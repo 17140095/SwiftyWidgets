@@ -104,7 +104,7 @@ extension Color {
     }
 }
 
-@available(iOS 13.0, *)
+@available(iOS 15.0, *)
 extension View {
     
     public func keyboardAwarePadding() -> some View {
@@ -207,5 +207,15 @@ extension View {
         }
         
     }
-    
+    public func showLoading(isLoading: Binding<Bool>) -> some View {
+            ZStack {
+                self // Original content
+                    .disabled(isLoading.wrappedValue)
+                    .blur(radius: isLoading.wrappedValue ? 3 : 0)
+
+                if isLoading.wrappedValue {
+                    LoadingViews.getInstance().getLoader()
+                }
+            }
+        }
 }
