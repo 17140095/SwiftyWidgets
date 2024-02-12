@@ -26,11 +26,13 @@ public enum ThemeColors {
         public static var rightView = ThemeColors.primary
         public static var background: Color = .clear
         public static var forground = ThemeColors.primary
+        public static var font = ThemeFonts.primary
     }
     public enum SwiftyButton {
-        public static var border = ThemeColors.primaryDark
+        public static var border = ThemeColors.primary
         public static var background = ThemeColors.secondary
         public static var forground = ThemeColors.primary
+        public static var font = ThemeFonts.primary
     }
 }
 

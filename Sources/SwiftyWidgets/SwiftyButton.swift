@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-@available(iOS 13.0, *)
+@available(iOS 15.0, *)
 public struct SwiftyButton: View {
     public let title: String
     public var props: SwiftyButtonProps = SwiftyButtonProps()
@@ -30,10 +30,10 @@ public struct SwiftyButton: View {
     }
     
     private func getBgColor() -> Color {
-        props.style == .OUTLINED ? props.backgroundColor : props.forgroundColor
+        props.style == .OUTLINED ? props.backgroundColor : props.foregroundColor
     }
     private func getFgColor() -> Color {
-        props.style == .OUTLINED ? props.forgroundColor : props.backgroundColor
+        props.style == .OUTLINED ? props.foregroundColor : props.backgroundColor
     }
     
     @ViewBuilder
@@ -52,7 +52,7 @@ public struct SwiftyButton: View {
                 }
                 if props.style != .IMAGE_ONLY {
                     Text(title)
-                        .tintColor(props.forgroundColor)
+                        .tintColor(props.foregroundColor)
                         .padding(getIconSpaceEdge(), props.iconSpacing)
                 }
                 if props.showIcon, iconPos == .RIGHT {
@@ -74,7 +74,7 @@ public struct SwiftyButton: View {
         .background(getBgColor())
         .clipShape(RoundedRectangle(cornerRadius: props.cornerRadius))
         
-        .overlay(if: props.showBorder){
+        .overlay{
             RoundedRectangle(cornerRadius: props.cornerRadius)
                 .stroke(props.border.color, lineWidth: props.border.width)
         }
@@ -101,7 +101,7 @@ public struct SwiftyButton: View {
 }
 
 #if DEBUG
-@available(iOS 13.0, *)
+@available(iOS 15.0, *)
 #Preview {
     HStack {
         SwiftyButton(title: "Press",props: SwiftyButtonProps()) {
@@ -114,7 +114,7 @@ public struct SwiftyButton: View {
 @available(iOS 13.0, *)
 public struct SwiftyButtonProps {
     public var font: Font
-    public var forgroundColor: Color
+    public var foregroundColor: Color
     public var backgroundColor: Color
     public var cornerRadius: CGFloat
     public var paddingV: CGFloat
@@ -126,12 +126,11 @@ public struct SwiftyButtonProps {
     public var showIcon: Bool
     public var shadow: ShadowProps
     public var border: BorderProps
-    public var showBorder: Bool
     public var style: SwiftyButtonStyle
     
-    public init(font: Font = ThemeFonts.primary, forgroundColor: Color = ThemeColors.SwiftyButton.forground, backgroundColor: Color = ThemeColors.SwiftyButton.background, cornerRadius: CGFloat = 50.0, paddingV: CGFloat = 15.0, paddingH: CGFloat = 15.0, icon: AnyView = AnyView(Image(systemName: "cross")), iconPos: SwiftyButtonIconPos = .LEFT, iconSpacing: CGFloat = 3.0, iconColor: Color = ThemeColors.SwiftyButton.forground, showIcon: Bool = true, shadow: ShadowProps = ShadowProps(), border: BorderProps = BorderProps(color: ThemeColors.SwiftyButton.border), showBorder: Bool = true, style: SwiftyButtonStyle = .FILLED) {
+    public init(font: Font = ThemeFonts.SwiftyButton.font, foregroundColor: Color = ThemeColors.SwiftyButton.forground, backgroundColor: Color = ThemeColors.SwiftyButton.background, cornerRadius: CGFloat = 10.0, paddingV: CGFloat = 15.0, paddingH: CGFloat = 15.0, icon: AnyView = AnyView(Image(systemName: "cross")), iconPos: SwiftyButtonIconPos = .LEFT, iconSpacing: CGFloat = 3.0, iconColor: Color = ThemeColors.SwiftyButton.forground, showIcon: Bool = true, shadow: ShadowProps = ShadowProps(), border: BorderProps = BorderProps(color: ThemeColors.SwiftyButton.border), style: SwiftyButtonStyle = .OUTLINED) {
         self.font = font
-        self.forgroundColor = forgroundColor
+        self.foregroundColor = foregroundColor
         self.backgroundColor = backgroundColor
         self.cornerRadius = cornerRadius
         self.paddingV = paddingV
@@ -143,7 +142,6 @@ public struct SwiftyButtonProps {
         self.showIcon = showIcon
         self.shadow = shadow
         self.border = border
-        self.showBorder = showBorder
         self.style = style
     }
 }
