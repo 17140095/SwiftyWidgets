@@ -10,14 +10,14 @@ import SwiftUI
 @available(iOS 15.0, *)
 public struct SwiftyInput: View {
     @Binding var text: String
-    @State private var isSecure: Bool = true
+    @State private var isSecure: Bool
     @FocusState private var isFocused: Bool
     var props: InputFieldProps
 
     public init(text: Binding<String>, props: InputFieldProps = InputFieldProps()) {
         self._text = text
         self.props = props
-        self.isSecure = props.isSecure
+        self._isSecure = State<Bool>(initialValue: props.isSecure)
         UITextField.appearance().tintColor = props.cursorColor.uiColor()
     }
 
@@ -30,7 +30,7 @@ public struct SwiftyInput: View {
                         .padding(.trailing, props.leftViewSpace)
                 }
 
-                getField(isSecure: isSecure)
+                getField()
                     .focused($isFocused)
                     .fgStyle(props.textColor)
                     .textFieldStyle(.plain)
@@ -72,7 +72,7 @@ public struct SwiftyInput: View {
     
     
     @ViewBuilder
-    private func getField(isSecure: Bool) -> some View {
+    private func getField() -> some View {
         if isSecure {
             if #available(iOS 15.0, *) {
                 SecureField("", text: $text, prompt: getPlaceholder())
@@ -140,10 +140,10 @@ struct TestContentView: View {
 
     var body: some View {
         VStack {
-            SwiftyInput(text: $text)
+            SwiftyInput(text: $text, props: InputFieldProps(isSecure: false))
             SwiftyInput(text: $text, props: InputFieldProps(leftView: AnyView(Image(systemName: "person"))))
             SwiftyInput(text: $text, props: InputFieldProps(leftView: AnyView(Image(systemName: "person"))))
-            SwiftyInput(text: $text, props: InputFieldProps(leftView: AnyView(Text("🔒")), rightView: AnyView(Image(systemName: "eyeglasses"))))
+            SwiftyInput(text: $text, props: InputFieldProps(leftView: AnyView(Text("🔒")), rightView: AnyView(Image(systemName: "eyeglasses")), isSecure: true))
             SwiftyInput(text: $text, props: InputFieldProps(leftView: AnyView(Text("🔒")), rightView: AnyView(Image(systemName: "eyeglasses"))))
                             
         }
