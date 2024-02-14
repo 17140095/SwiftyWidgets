@@ -19,7 +19,8 @@ public enum ThemeColors {
     public static var lightGreen = Color(hex: "#d2f5b0")
     public static var lightRed = Color(hex: "#fcbdbd")
     public static var lightGray = Color(hex: "#c2dfff")
-    public enum SwiftyInut {
+    public enum SwiftyInput {
+        public static var placeholderColor =  Color.gray
         public static var border = ThemeColors.primary
         public static var tint = ThemeColors.primary
         public static var leftView = ThemeColors.primary

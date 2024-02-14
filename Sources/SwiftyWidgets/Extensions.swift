@@ -12,6 +12,10 @@ extension String {
     public func trim() -> String {
         self.trimmingCharacters(in: .whitespacesAndNewlines)
     }
+    
+    public func isBlank() -> Bool {
+        self.trim().isEmpty
+    }
 }
 
 extension UIColor {
@@ -207,6 +211,40 @@ extension View {
         }
         
     }
+    
+    @ViewBuilder
+    public func onChangeInput(of value: String, delegate inputDelegate: SwiftyInputProtocol?, perform action: @escaping (_ newValue: String) -> Void) -> some View {
+        
+        if #available(iOS 17.0, *) {
+            self.onChange(of: value) { oldValue, newValue in
+                action(newValue)
+                inputDelegate?.onChange(newValue)
+            }
+        } else {
+            self.onChange(of: value, perform: { newValue in
+                action(newValue)
+                inputDelegate?.onChange(newValue)
+            })
+        }
+    }
+    
+    @ViewBuilder
+    public func onChangeFocus(of value: Bool, delegate inputDelegate: SwiftyInputProtocol?, perform action: @escaping (_ newValue: Bool) -> Void) -> some View {
+        
+        if #available(iOS 17.0, *) {
+            self.onChange(of: value) { oldFocusValue, focusValue in
+                action(focusValue)
+                inputDelegate?.onFocus(focusValue)
+            }
+        } else {
+            self.onChange(of: value, perform: { focusValue in
+                action(focusValue)
+                inputDelegate?.onFocus(focusValue)
+            })
+        }
+    }
+    
+    
     public func showLoading(isLoading: Binding<Bool>) -> some View {
             ZStack {
                 self // Original content

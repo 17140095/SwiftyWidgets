@@ -16,5 +16,6 @@ public enum ThemeFonts {
     }
     public enum SwiftyInput {
         public static var font = ThemeFonts.primary
+        public static var errorFont = ThemeFonts.SwiftyInput.font
     }
 }
