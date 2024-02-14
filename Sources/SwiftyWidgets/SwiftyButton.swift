@@ -52,7 +52,7 @@ public struct SwiftyButton: View {
                 }
                 if props.style != .IMAGE_ONLY {
                     Text(title)
-                        .tintColor(props.foregroundColor)
+                        .tintColor(getFgColor())
                         .padding(getIconSpaceEdge(), props.iconSpacing)
                 }
                 if props.showIcon, iconPos == .RIGHT {
@@ -104,7 +104,7 @@ public struct SwiftyButton: View {
 @available(iOS 15.0, *)
 #Preview {
     HStack {
-        SwiftyButton(title: "Press",props: SwiftyButtonProps()) {
+        SwiftyButton(title: "Press",props: SwiftyButtonProps(style: .OUTLINED)) {
             print("Button pressed")
         }
     }
