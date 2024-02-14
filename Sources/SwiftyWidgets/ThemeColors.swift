@@ -30,9 +30,11 @@ public enum ThemeColors {
         public static var font = ThemeFonts.primary
     }
     public enum SwiftyButton {
-        public static var border = ThemeColors.primary
-        public static var background = ThemeColors.secondary
-        public static var forground = ThemeColors.primary
+//        public static var border = ThemeColors.primary
+        public static var filledBg = ThemeColors.primary
+        public static var filledFg = ThemeColors.secondary
+        public static var outlinedBg = ThemeColors.secondary
+        public static var outlinedFg = ThemeColors.primary
         public static var font = ThemeFonts.primary
     }
 }
