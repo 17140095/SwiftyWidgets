@@ -25,6 +25,7 @@ public struct SwiftyButton: View {
         }) {
             buildView(iconPos: props.iconPos)
         }
+        .buttonStyle(ScaleEffectStyle(props: self.props))
     }
     
     @ViewBuilder
@@ -104,6 +105,26 @@ public struct SwiftyButton: View {
 }
 
 #endif
+
+@available(iOS 15.0.0, *)
+fileprivate struct ScaleEffectStyle: ButtonStyle {
+
+    private var props: SwiftyButtonProps
+    
+    public init(props: SwiftyButtonProps) {
+        self.props = props
+    }
+    
+    public func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .foregroundColor(props.getFgColor())
+            .font(props.font)
+            .scaleEffect(configuration.isPressed ? 0.8 : 1.0)
+            .opacity(configuration.isPressed ? 0.8 : 1.0)
+            .animation(.easeInOut, value: configuration.isPressed)
+    }
+}
+
 @available(iOS 13.0, *)
 public struct SwiftyButtonProps {
     public var font: Font

@@ -123,11 +123,13 @@ public struct SwiftyInput: View {
     
     private func secureField() -> some View {
         SecureField("", text: $text, prompt: getPlaceholder())
+            .font(props.font)
             .padding(.vertical, 15)
     }
     
     private func textField() -> some View {
         TextField("", text: $text, prompt: getPlaceholder())
+            .font(props.font)
             .padding(.vertical, 15)
     }
     
