@@ -213,6 +213,15 @@ extension View {
     }
     
     @ViewBuilder
+    public func buttonStyle<S>(_ style: S, if condition: Bool) -> some View where S : ButtonStyle {
+        if condition {
+            self.buttonStyle(style)
+        } else {
+            self
+        }
+    }
+    
+    @ViewBuilder
     public func onChangeInput(of value: String, delegate inputDelegate: SwiftyInputProtocol?, perform action: @escaping (_ newValue: String) -> Void) -> some View {
         
         if #available(iOS 17.0, *) {
