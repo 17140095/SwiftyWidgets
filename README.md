@@ -1,5 +1,5 @@
 <p align="center">
-<img src="https://github.com/17140095/SwiftyWidgets/tree/main/Sources/SwiftyWidgets/screenshots/SwiftyWidgetIcon.png" width="204"/>
+<img src="https://github.com/17140095/SwiftyWidgets/blob/main/Sources/SwiftyWidgets/screenshots/SwiftyWidgetIcon.png" width="204"/>
 </p>
 <h1 align="center">Swifty Widgets</h1>
 </p>
@@ -17,7 +17,7 @@ iOS 15.0
 ## Demo
 
 <p align="center">
-<img src="https://github.com/17140095/SwiftyWidgets/tree/main/Sources/SwiftyWidgets/screenshots/InputAndButton.gif"/>
+<img src="https://github.com/17140095/SwiftyWidgets/blob/main/Sources/SwiftyWidgets/screenshots/InputAndButton.gif"/>
 </p>
 <h1 align="center">Swifty Widgets</h1>
 </p>
