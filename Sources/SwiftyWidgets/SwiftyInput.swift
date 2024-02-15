@@ -60,14 +60,14 @@ public struct SwiftyInput: View {
                 
             }//HStack
             .padding(.horizontal, 10, if: props.style == .BORDERD)
-            .border(props.borderProps.color, width: isFocused ? props.borderProps.width: 1.0, if: props.showBorder())
+            .border(getBorderColor(), width: isFocused ? props.borderProps.width : 1.0, if: props.showBorder())
             .background(props.backgroundColor)
             
             if props.style == .UNDERLINED {
                 withAnimation {
                     Rectangle()
                         .frame(height: isFocused ? props.borderProps.width: 1.0)
-                        .fgStyle(showError && !isFocused ? .red : props.borderProps.color)
+                        .fgStyle(getBorderColor())
                 }
                 
             }
@@ -90,6 +90,9 @@ public struct SwiftyInput: View {
         .onChangeFocus(of: isFocused, delegate: delegate, perform: self.onFocus(_:))
     }
     
+    private func getBorderColor() -> Color {
+        return showError && !isFocused ? .red : props.borderProps.color
+    }
     
     @ViewBuilder
     private func getFieldView() -> some View {
@@ -210,6 +213,8 @@ struct TestContentView: View {
             SwiftyInput(text: $text, props: InputFieldProps(leftView: AnyView(Image(systemName: "person"))))
             SwiftyInput(text: $text, props: InputFieldProps(leftView: AnyView(Text("🔒")), rightView: AnyView(Image(systemName: "eyeglasses")), isSecure: true))
             SwiftyInput(text: $text, props: InputFieldProps(leftView: AnyView(Text("🔒")), rightView: AnyView(Image(systemName: "eyeglasses"))))
+            SwiftyInput(text: $text, props: InputFieldProps(isSecure: true, style: .BORDERD, isMandatory: true))
+            SwiftyInput(text: $text, props: InputFieldProps(isSecure: true,  style: .BORDERD))
                             
         }
     }

@@ -49,10 +49,11 @@ public struct SwiftyButton: View {
         .padding(.vertical, props.paddingV)
         .padding(.horizontal, props.paddingH)
         .font(props.font)
-        .shadow(props: props.shadow)
+//        .shadow(props: props.shadow)
         .contentShape(RoundedRectangle(cornerRadius: props.cornerRadius))
         .background(props.getBgColor())
         .clipShape(RoundedRectangle(cornerRadius: props.cornerRadius))
+        .shadow(props: props.shadow)
         .overlay {
             RoundedRectangle(cornerRadius: props.cornerRadius)
                 .stroke(props.border.color, lineWidth: props.border.width)
@@ -63,22 +64,28 @@ public struct SwiftyButton: View {
 #if DEBUG
 @available(iOS 15.0, *)
 #Preview {
-    VStack(spacing: 10) {
+    VStack(spacing: 20) {
         SwiftyButton(title: "filled",props: SwiftyButtonProps(icon: Image(systemName: "person"), style: .FILLED)) {
             print("Button pressed")
         }
         SwiftyButton(title: "filled",props: SwiftyButtonProps(icon: Image(systemName: "person"), iconPos: .RIGHT, style: .FILLED)) {
             print("Button pressed")
         }
-        SwiftyButton(title: "filled",props: SwiftyButtonProps(icon: Image(systemName: "person"), iconPos: .TOP,  style: .FILLED)) {
+        SwiftyButton(title: "filled",props: SwiftyButtonProps(icon: Image(systemName: "person"), iconPos: .TOP,  shadow: ShadowProps( radius: 5, apply: true), style: .FILLED)) {
             print("Button pressed")
         }
+        .frame(width: 100)
+        
         SwiftyButton(title: "filled",props: SwiftyButtonProps(icon: Image(systemName: "person"), iconPos: .BOTTOM,  style: .FILLED)) {
             print("Button pressed")
         }
         SwiftyButton(title: "OUTLINE",props: SwiftyButtonProps(cornerRadius: 10.0, icon: Image(systemName: "person"), iconPos: .TOP, style: .IMAGE_ONLY_FILLED, effect: .DEFAULT)) {
             print("Button pressed")
         }
+        SwiftyButton(title: "OUTLINE",props: SwiftyButtonProps(cornerRadius: 10.0, icon: Image(systemName: "person"), iconPos: .TOP, style: .IMAGE_ONLY_FILLED, effect: .DEFAULT)) {
+            print("Button pressed")
+        }
+        .frame(width: 100)
         
         SwiftyButton(title: "OUTLINE",props: SwiftyButtonProps(icon: Image(systemName: "person"), iconPos: .LEFT, iconSpacing: 5, style: .OUTLINED)) {
             print("Button pressed")
@@ -209,13 +216,13 @@ public struct BorderProps {
 
 @available(iOS 13.0, *)
 public struct ShadowProps {
-    public var color: Color = ThemeColors.primary .opacity(0.33)
-    public var radius: CGFloat = 5.0
-    public var x: CGFloat = 5.0
-    public var y: CGFloat = 5.0
-    public var apply: Bool = true
+    public var color: Color
+    public var radius: CGFloat
+    public var x: CGFloat
+    public var y: CGFloat
+    public var apply: Bool
     
-    public init(color: Color = ThemeColors.primary.opacity(0.33), radius: CGFloat = 5.0, x: CGFloat = 5.0, y: CGFloat = 5.0, apply: Bool = true) {
+    public init(color: Color = ThemeColors.shadow, radius: CGFloat = 5.0, x: CGFloat = 5.0, y: CGFloat = 5.0, apply: Bool = false) {
         self.color = color
         self.radius = radius
         self.x = x
