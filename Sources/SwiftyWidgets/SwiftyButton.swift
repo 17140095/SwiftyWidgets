@@ -76,7 +76,7 @@ public struct SwiftyButton: View {
         SwiftyButton(title: "filled",props: SwiftyButtonProps(icon: Image(systemName: "person"), iconPos: .BOTTOM,  style: .FILLED)) {
             print("Button pressed")
         }
-        SwiftyButton(title: "OUTLINE",props: SwiftyButtonProps(cornerRadius: 10.0, icon: Image(systemName: "person"), iconPos: .TOP, style: .IMAGE_ONLY_FILLED)) {
+        SwiftyButton(title: "OUTLINE",props: SwiftyButtonProps(cornerRadius: 10.0, icon: Image(systemName: "person"), iconPos: .TOP, style: .IMAGE_ONLY_FILLED, effect: .DEFAULT)) {
             print("Button pressed")
         }
         
@@ -92,7 +92,7 @@ public struct SwiftyButton: View {
         SwiftyButton(title: "OUTLINE",props: SwiftyButtonProps(icon: Image(systemName: "person"), iconPos: .BOTTOM, iconSpacing: 5, style: .OUTLINED)) {
             print("Button pressed")
         }
-        SwiftyButton(title: "OUTLINE",props: SwiftyButtonProps(cornerRadius: 10.0, icon: Image(systemName: "person"), iconPos: .TOP, style: .IMAGE_ONLY_OUTLINED)) {
+        SwiftyButton(title: "OUTLINE",props: SwiftyButtonProps(cornerRadius: 10.0, icon: Image(systemName: "person"), iconPos: .TOP, style: .IMAGE_ONLY_OUTLINED, effect: .DEFAULT)) {
             print("Button pressed")
         }
     }

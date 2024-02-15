@@ -60,7 +60,7 @@ public struct SwiftyInput: View {
                 
             }//HStack
             .padding(.horizontal, 10, if: props.style == .BORDERD)
-            .border(props.borderProps.color, width: props.borderProps.width, if: props.showBorder())
+            .border(props.borderProps.color, width: isFocused ? props.borderProps.width: 1.0, if: props.showBorder())
             .background(props.backgroundColor)
             
             if props.style == .UNDERLINED {
@@ -88,7 +88,6 @@ public struct SwiftyInput: View {
             isFocused = true
         }
         .onChangeFocus(of: isFocused, delegate: delegate, perform: self.onFocus(_:))
-//        .onChange(of: isFocused, perform: self.onFocus(_:))
     }
     
     
