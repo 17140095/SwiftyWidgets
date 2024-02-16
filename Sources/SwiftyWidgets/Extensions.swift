@@ -118,21 +118,22 @@ extension View {
         )
     }
     @ViewBuilder
-    public func border(props: BorderProps, if condition: Bool) -> some View {
-        if condition {
+    public func border(props: BorderProps?) -> some View {
+        if let props = props {
             self.border(props.color, width: props.width)
         } else {
             self
         }
     }
     @ViewBuilder
-    public func border<S>(_ content: S, width: CGFloat = 1, if condition: Bool) -> some View where S : ShapeStyle {
+    public func border(props: BorderProps, isFocus: Bool, isError: Bool, if condition: Bool) -> some View {
         if condition {
-           self.border(content, width: width)
+            self.border(isError ? .red : props.color, width: isFocus ? props.getFocusWidth() : props.width )
         } else {
             self
         }
     }
+    
     
     @ViewBuilder
     public func textFieldStyle<S>(style: S, if condition: Bool) -> some View where S : TextFieldStyle {
@@ -153,8 +154,8 @@ extension View {
     }
     
     @ViewBuilder
-    public func shadow(props: ShadowProps, if condition: Bool = true) -> some View {
-        if condition, props.apply {
+    public func shadow(props: ShadowProps?) -> some View {
+        if let props = props {
             self.shadow(color: props.color, radius: props.radius, x: props.x, y: props.y)
         } else {
             self

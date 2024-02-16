@@ -1,6 +1,5 @@
 //
-//  AppButton.swift
-//  HealthDiet
+//  SwiftyButton.swift
 //
 //  Created by Ali Raza on 21/01/2024.
 //
@@ -49,7 +48,6 @@ public struct SwiftyButton: View {
         .padding(.vertical, props.paddingV)
         .padding(.horizontal, props.paddingH)
         .font(props.font)
-//        .shadow(props: props.shadow)
         .contentShape(RoundedRectangle(cornerRadius: props.cornerRadius))
         .background(props.getBgColor())
         .clipShape(RoundedRectangle(cornerRadius: props.cornerRadius))
@@ -71,7 +69,7 @@ public struct SwiftyButton: View {
         SwiftyButton(title: "filled",props: SwiftyButtonProps(icon: Image(systemName: "person"), iconPos: .RIGHT, style: .FILLED)) {
             print("Button pressed")
         }
-        SwiftyButton(title: "filled",props: SwiftyButtonProps(icon: Image(systemName: "person"), iconPos: .TOP,  shadow: ShadowProps( radius: 5, apply: true), style: .FILLED)) {
+        SwiftyButton(title: "filled",props: SwiftyButtonProps(icon: Image(systemName: "person"), iconPos: .TOP,  shadow: ShadowProps(), style: .FILLED)) {
             print("Button pressed")
         }
         .frame(width: 100)
@@ -140,13 +138,13 @@ public struct SwiftyButtonProps {
     public var iconPos: SwiftyButtonIconPos
     public var iconSpacing: CGFloat
     public var showIcon: Bool
-    public var shadow: ShadowProps
+    public var shadow: ShadowProps?
     public var border: BorderProps
     public var style: SwiftyButtonStyle
     public var colors: SwiftyButtonColors
     public var effect: SwiftyButtonEffect
     
-    public init(font: Font = ThemeFonts.SwiftyButton.font, cornerRadius: CGFloat = 10.0, paddingV: CGFloat = 15.0, paddingH: CGFloat = 15.0, icon: Image? = nil, iconPos: SwiftyButtonIconPos = .LEFT, iconSpacing: CGFloat = 5.0, showIcon: Bool = true, shadow: ShadowProps = ShadowProps(), border: BorderProps = BorderProps(color: ThemeColors.SwiftyButton.filledFg), style: SwiftyButtonStyle = .FILLED, colors: SwiftyButtonColors = SwiftyButtonColors(), effect: SwiftyButtonEffect = .SCALER) {
+    public init(font: Font = ThemeFonts.SwiftyButton.font, cornerRadius: CGFloat = 10.0, paddingV: CGFloat = 15.0, paddingH: CGFloat = 15.0, icon: Image? = nil, iconPos: SwiftyButtonIconPos = .LEFT, iconSpacing: CGFloat = 5.0, showIcon: Bool = true, shadow: ShadowProps? = nil, border: BorderProps = BorderProps(color: ThemeColors.SwiftyButton.filledFg), style: SwiftyButtonStyle = .FILLED, colors: SwiftyButtonColors = SwiftyButtonColors(), effect: SwiftyButtonEffect = .SCALER) {
         self.font = font
         self.cornerRadius = cornerRadius
         self.paddingV = paddingV
@@ -205,12 +203,16 @@ public struct SwiftyButtonColors {
 
 @available(iOS 13.0, *)
 public struct BorderProps {
-    public var color: Color = ThemeColors.primary
-    public var width: CGFloat = 2.0
+    public var color: Color
+    public var width: CGFloat
     
-    public init(color: Color = ThemeColors.primary, width: CGFloat = 2.0) {
+    public init(color: Color = ThemeColors.primary, width: CGFloat = 1.0) {
         self.color = color
         self.width = width
+    }
+    
+    public func getFocusWidth() -> CGFloat {
+        self.width + 1.0
     }
 }
 
@@ -220,14 +222,12 @@ public struct ShadowProps {
     public var radius: CGFloat
     public var x: CGFloat
     public var y: CGFloat
-    public var apply: Bool
     
-    public init(color: Color = ThemeColors.shadow, radius: CGFloat = 5.0, x: CGFloat = 5.0, y: CGFloat = 5.0, apply: Bool = false) {
+    public init(color: Color = ThemeColors.shadow, radius: CGFloat = 5.0, x: CGFloat = 5.0, y: CGFloat = 5.0) {
         self.color = color
         self.radius = radius
         self.x = x
         self.y = y
-        self.apply = apply
     }
 }
 
