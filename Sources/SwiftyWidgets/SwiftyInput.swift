@@ -1,6 +1,5 @@
 //
 //  InputField.swift
-//  HealthDiet
 //
 //  Created by Ali Raza on 21/01/2024.
 
@@ -67,13 +66,13 @@ public struct SwiftyInput: View {
                 
             }//HStack
             .padding(.horizontal, 10, if: props.style == .BORDERD)
-            .border(getBorderColor(), width: isFocused ? props.borderProps.width : 1.0, if: props.showBorder())
+            .border(props: props.borderProps ?? BorderProps(), isFocus: isFocused, isError: showError, if: props.style == .BORDERD)
             .background(props.backgroundColor)
             
             if props.style == .UNDERLINED {
                 withAnimation {
                     Rectangle()
-                        .frame(height: isFocused ? props.borderProps.width: 1.0)
+                        .frame(height: isFocused ? props.borderProps?.getFocusWidth() ?? 2.0 : props.borderProps?.width ?? 1.0 )
                         .fgStyle(getBorderColor())
                 }
                 
@@ -98,7 +97,7 @@ public struct SwiftyInput: View {
     }
     
     private func getBorderColor() -> Color {
-        return showError && !isFocused ? .red : props.borderProps.color
+        return showError && !isFocused ? .red : props.borderProps?.color ?? ThemeColors.primary
     }
     
     @ViewBuilder
@@ -261,7 +260,7 @@ public struct SwiftyInputProps {
     public var placeholderColor: Color
     public var clearIconColor: Color
     public var backgroundColor: Color
-    public var borderProps: BorderProps
+    public var borderProps: BorderProps?
     public var font: Font
     public var isSecure: Bool
     public var style: InputFieldStyle
@@ -270,7 +269,7 @@ public struct SwiftyInputProps {
     public var errors: ErrorMsgs
     public var isMandatory: Bool
     
-    public init(leftView: Image? = nil, rightView: Image? = nil, leftViewSpace: CGFloat = 5.0, rightViewSpace: CGFloat = 5.0, leftViewColor: Color = ThemeColors.SwiftyInput.leftView, rightViewColor: Color = ThemeColors.SwiftyInput.rightView, clearIcon: Image = Image(systemName: "multiply"), showClearIcon: Bool = true, secureIcons: String = "eye.fill,eye.slash.fill", cursorColor: Color = ThemeColors.SwiftyInput.tint, textColor: Color = ThemeColors.SwiftyInput.forground, placeholderColor: Color = ThemeColors.SwiftyInput.placeholderColor, clearIconColor: Color = ThemeColors.SwiftyInput.tint, backgroundColor: Color = ThemeColors.SwiftyInput.background, borderProps: BorderProps = BorderProps(color: ThemeColors.SwiftyInput.border, width: 2.0), font: Font  = ThemeFonts.SwiftyInput.font, isSecure: Bool = false, style: InputFieldStyle = .UNDERLINED, limit: Int = -1, regex: String = ".*", errors: ErrorMsgs = ErrorMsgs(), isMandatory: Bool = false) {
+    public init(leftView: Image? = nil, rightView: Image? = nil, leftViewSpace: CGFloat = 5.0, rightViewSpace: CGFloat = 5.0, leftViewColor: Color = ThemeColors.SwiftyInput.leftView, rightViewColor: Color = ThemeColors.SwiftyInput.rightView, clearIcon: Image = Image(systemName: "multiply"), showClearIcon: Bool = true, secureIcons: String = "eye.fill,eye.slash.fill", cursorColor: Color = ThemeColors.SwiftyInput.tint, textColor: Color = ThemeColors.SwiftyInput.forground, placeholderColor: Color = ThemeColors.SwiftyInput.placeholderColor, clearIconColor: Color = ThemeColors.SwiftyInput.tint, backgroundColor: Color = ThemeColors.SwiftyInput.background, borderProps: BorderProps? = nil, font: Font  = ThemeFonts.SwiftyInput.font, isSecure: Bool = false, style: InputFieldStyle = .UNDERLINED, limit: Int = -1, regex: String = ".*", errors: ErrorMsgs = ErrorMsgs(), isMandatory: Bool = false) {
         
         self.leftView = leftView
         self.rightView = rightView
