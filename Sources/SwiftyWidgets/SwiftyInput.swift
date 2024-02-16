@@ -9,15 +9,17 @@ import SwiftUI
 
 @available(iOS 15.0, *)
 public struct SwiftyInput: View {
+    var prompt: String
     @Binding var text: String
     @State private var isSecure: Bool
     @State private var showError = false
     @FocusState private var isFocused: Bool
     var delegate: SwiftyInputProtocol?
     @State var errorMsg: String = ""
-    var props: InputFieldProps
+    var props: SwiftyInputProps
 
-    public init(text: Binding<String>, props: InputFieldProps = InputFieldProps(), delegate: SwiftyInputProtocol? = nil) {
+    public init(prompt: String = "Placeholder", text: Binding<String>, props: SwiftyInputProps = SwiftyInputProps(), delegate: SwiftyInputProtocol? = nil) {
+        self.prompt = prompt
         self._text = text
         self.props = props
         self.delegate = delegate
@@ -29,8 +31,9 @@ public struct SwiftyInput: View {
         VStack(spacing: 0) {
             HStack (spacing: 0){
                 if let leftView = props.leftView {
-                    leftView
-                        .fgStyle(props.leftViewColor)
+                    getOnlyIconLabel(icon: leftView)
+                        .font(props.font)
+                        .fgStyle(props.rightViewColor)
                         .padding(.trailing, props.leftViewSpace)
                 }
 
@@ -40,23 +43,27 @@ public struct SwiftyInput: View {
                     .fgStyle(props.textColor)
                     .textFieldStyle(.plain)
                     
-                if !self.text.trim().isEmpty && props.showClearIcon {
-                    Button {
-                        self.text = ""
-                    } label: {
-                        props.clearIcon
-                            .tint(props.clearIconColor)
+                HStack(spacing: props.rightViewSpace) {
+                    if !self.text.trim().isEmpty && props.showClearIcon {
+                        Button {
+                            self.text = ""
+                        } label: {
+                            props.clearIcon
+                                .tint(props.clearIconColor)
+                                .font(props.font)
+                        }
+                    }
+                    
+                    if props.isSecure {
+                        getSecureIconView()
+                    }
+                    if let rightView = props.rightView {
+                       getOnlyIconLabel(icon: rightView)
+                            .font(props.font)
+                            .fgStyle(props.rightViewColor)
                     }
                 }
                 
-                if props.isSecure {
-                    getSecureIconView()
-                }
-                if let rightView = props.rightView {
-                    rightView
-                        .fgStyle(props.rightViewColor)
-                        .padding(.leading, props.rightViewSpace)
-                }
                 
             }//HStack
             .padding(.horizontal, 10, if: props.style == .BORDERD)
@@ -92,6 +99,14 @@ public struct SwiftyInput: View {
     
     private func getBorderColor() -> Color {
         return showError && !isFocused ? .red : props.borderProps.color
+    }
+    
+    @ViewBuilder
+    private func getOnlyIconLabel(icon: Image) -> some View {
+        Label {
+        } icon: {
+            icon
+        }
     }
     
     @ViewBuilder
@@ -137,11 +152,11 @@ public struct SwiftyInput: View {
     
     private func getPlaceholder() -> Text? {
         if #available(iOS 17.0, *) {
-            Text(props.placeholder)
+            Text(prompt)
                 .foregroundStyle(props.placeholderColor)
                 .font(props.font)
         } else {
-            Text(props.placeholder)
+            Text(prompt)
                 .foregroundColor(props.placeholderColor)
                 .font(props.font)
         }
@@ -153,11 +168,11 @@ public struct SwiftyInput: View {
             self.isSecure.toggle()
         } label: {
             if let iconName = getSecureIconName() {
-                Image(systemName: iconName)
-                    .tint(ThemeColors.SwiftyInput.rightView)
+                getOnlyIconLabel(icon: Image(systemName: iconName))
+                    .font(props.font)
+                    .fgStyle(props.rightViewColor)
             }
         }
-        .padding(.leading, 8)
     }
     private func getSecureIconName() -> String? {
         let icons = props.secureIcons.split(separator: ",")
@@ -178,17 +193,14 @@ extension SwiftyInput {
     }
     
     private func onFocus(_ value: Bool) {
-        print("Defalut Inuput on focus called.")
-        print("\(props.placeholder) is focused: \(value)")
         if value {
-            
+            showError = false
         } else {
             validate()
         }
     }
     
     private func validate() {
-        print("validation called")
         if props.isMandatory && text.isBlank() {
             errorMsg = props.errors.mandatory
             showError = true
@@ -204,17 +216,21 @@ extension SwiftyInput {
 #if DEBUG
 @available(iOS 15.0, *)
 struct TestContentView: View {
-    @State private var text = ""
-
+    @State private var text = "20"
+    init(text: String = "") {
+//        ThemeFonts.SwiftyInput.font = .headline
+        self.text = text
+    }
     var body: some View {
         VStack {
-            SwiftyInput(text: $text, props: InputFieldProps(showClearIcon: false, isMandatory: true))
-            SwiftyInput(text: $text, props: InputFieldProps(leftView: AnyView(Image(systemName: "person"))))
-            SwiftyInput(text: $text, props: InputFieldProps(leftView: AnyView(Image(systemName: "person"))))
-            SwiftyInput(text: $text, props: InputFieldProps(leftView: AnyView(Text("🔒")), rightView: AnyView(Image(systemName: "eyeglasses")), isSecure: true))
-            SwiftyInput(text: $text, props: InputFieldProps(leftView: AnyView(Text("🔒")), rightView: AnyView(Image(systemName: "eyeglasses"))))
-            SwiftyInput(text: $text, props: InputFieldProps(isSecure: true, style: .BORDERD, isMandatory: true))
-            SwiftyInput(text: $text, props: InputFieldProps(isSecure: true,  style: .BORDERD))
+            SwiftyInput(text: $text, props: SwiftyInputProps(showClearIcon: false, isMandatory: true))
+            SwiftyInput(text: $text, props: SwiftyInputProps(leftView: Image(systemName: "person")))
+            SwiftyInput(text: $text, props: SwiftyInputProps(leftView: Image(systemName: "person")))
+            SwiftyInput(text: $text, props: SwiftyInputProps(leftView: Image(systemName: "person"), isSecure: true))
+            SwiftyInput(text: $text, props: SwiftyInputProps(leftView: Image(systemName: "person"), rightView: Image(systemName: "person"), isSecure: true))
+            SwiftyInput(text: $text, props: SwiftyInputProps(leftView: Image(systemName: "person"), rightView: Image(systemName: "person")))
+            SwiftyInput(text: $text, props: SwiftyInputProps(isSecure: true, style: .BORDERD, isMandatory: true))
+            SwiftyInput(text: $text, props: SwiftyInputProps(isSecure: true,  style: .BORDERD))
                             
         }
     }
@@ -230,10 +246,9 @@ struct ContentView_Previews: PreviewProvider {
 #endif
 
 @available(iOS 15.0, *)
-public struct InputFieldProps {
-    public var placeholder: String
-    public var leftView: AnyView?
-    public var rightView: AnyView?
+public struct SwiftyInputProps {
+    public var leftView: Image?
+    public var rightView: Image?
     public var leftViewSpace: CGFloat
     public var rightViewSpace: CGFloat
     public var leftViewColor: Color
@@ -255,9 +270,8 @@ public struct InputFieldProps {
     public var errors: ErrorMsgs
     public var isMandatory: Bool
     
-    public init(placeholder: String = "Placeholder...", leftView: AnyView? = nil, rightView: AnyView? = nil, leftViewSpace: CGFloat = 5.0, rightViewSpace: CGFloat = 5.0, leftViewColor: Color = ThemeColors.SwiftyInput.leftView, rightViewColor: Color = ThemeColors.SwiftyInput.rightView, clearIcon: Image = Image(systemName: "multiply"), showClearIcon: Bool = true, secureIcons: String = "eye.fill,eye.slash.fill", cursorColor: Color = ThemeColors.SwiftyInput.tint, textColor: Color = ThemeColors.SwiftyInput.forground, placeholderColor: Color = ThemeColors.SwiftyInput.placeholderColor, clearIconColor: Color = ThemeColors.SwiftyInput.tint, backgroundColor: Color = ThemeColors.SwiftyInput.background, borderProps: BorderProps = BorderProps(color: ThemeColors.SwiftyInput.border, width: 2.0), font: Font  = ThemeFonts.SwiftyInput.font, isSecure: Bool = false, style: InputFieldStyle = .UNDERLINED, limit: Int = -1, regex: String = ".*", errors: ErrorMsgs = ErrorMsgs(), isMandatory: Bool = false) {
+    public init(leftView: Image? = nil, rightView: Image? = nil, leftViewSpace: CGFloat = 5.0, rightViewSpace: CGFloat = 5.0, leftViewColor: Color = ThemeColors.SwiftyInput.leftView, rightViewColor: Color = ThemeColors.SwiftyInput.rightView, clearIcon: Image = Image(systemName: "multiply"), showClearIcon: Bool = true, secureIcons: String = "eye.fill,eye.slash.fill", cursorColor: Color = ThemeColors.SwiftyInput.tint, textColor: Color = ThemeColors.SwiftyInput.forground, placeholderColor: Color = ThemeColors.SwiftyInput.placeholderColor, clearIconColor: Color = ThemeColors.SwiftyInput.tint, backgroundColor: Color = ThemeColors.SwiftyInput.background, borderProps: BorderProps = BorderProps(color: ThemeColors.SwiftyInput.border, width: 2.0), font: Font  = ThemeFonts.SwiftyInput.font, isSecure: Bool = false, style: InputFieldStyle = .UNDERLINED, limit: Int = -1, regex: String = ".*", errors: ErrorMsgs = ErrorMsgs(), isMandatory: Bool = false) {
         
-        self.placeholder = placeholder
         self.leftView = leftView
         self.rightView = rightView
         self.leftViewSpace = leftViewSpace

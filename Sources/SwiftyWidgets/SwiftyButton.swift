@@ -43,7 +43,7 @@ public struct SwiftyButton: View {
                         .scaledToFit()
                 }
                 .font(props.font)
-                .labelStyle(VerticalLabelStyle(props: props))
+                .labelStyle(SwiftyButtonLabelStyle(props: props))
             Spacer()
         }
         .padding(.vertical, props.paddingV)
@@ -239,7 +239,7 @@ public enum SwiftyButtonIconPos {
 }
 
 @available(iOS 15.0, *)
-public struct VerticalLabelStyle: LabelStyle {
+public struct SwiftyButtonLabelStyle: LabelStyle {
     
     private var props: SwiftyButtonProps
     private var spacing = 0.0
