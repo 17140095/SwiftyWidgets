@@ -22,8 +22,10 @@ public enum AppConfig {
         public static var filledFgColor = AppConfig.secondaryColor
         public static var outlinedBgColor = AppConfig.secondaryColor
         public static var outlinedFgColor = AppConfig.primaryColor
-        public static var style: SwiftyButtonStyle = .OUTLINED
+        public static var style: SwiftyButtonStyle = .FILLED
+        public static var borderProps = BorderProps(color: AppConfig.Buttons.filledFgColor)
         public static var radius: CGFloat = 10.0
+        public static var padding = EdgeInsets(top: 15, leading: 15, bottom: 15, trailing: 15)
         public static var effect: SwiftyButtonEffect = .SCALER
     }
     public enum Inputs {
@@ -31,12 +33,16 @@ public enum AppConfig {
         public static var errorFont = AppConfig.Inputs.font
         public static var placeholderColor =  Color.gray
         public static var cursorColor = AppConfig.primaryColor
+        public static var leftViewSpace: CGFloat = 5.0
+        public static var rightViewSpace: CGFloat = 5.0
         public static var leftIconColor = AppConfig.primaryColor
         public static var rightIconColor = AppConfig.primaryColor
         public static var backgroundColor: Color = .clear
         public static var foregroundColor = AppConfig.primaryColor
+        public static var errorMsgs = ErrorMsgs()
         public static var clearIcon: Image = Image(systemName: "multiply")
         public static var shouldFloat = false
         public static var style: SwiftyInputStyle = .UNDERLINED
+        public static var securedIcons = SwiftyInputSecureIcons()
     }
 }
