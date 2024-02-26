@@ -144,7 +144,7 @@ public struct SwiftyButtonProps {
     public var colors: SwiftyButtonColors
     public var effect: SwiftyButtonEffect
     
-    public init(font: Font = AppConfig.Buttons.font, cornerRadius: CGFloat = 10.0, paddingV: CGFloat = 15.0, paddingH: CGFloat = 15.0, icon: Image? = nil, iconPos: SwiftyButtonIconPos = .LEFT, iconSpacing: CGFloat = 5.0, showIcon: Bool = true, shadow: ShadowProps? = nil, border: BorderProps = BorderProps(color: AppConfig.Buttons.filledFgColor), style: SwiftyButtonStyle = AppConfig.Buttons.Style, colors: SwiftyButtonColors = SwiftyButtonColors(), effect: SwiftyButtonEffect = AppConfig.Buttons.effect) {
+    public init(font: Font = AppConfig.Buttons.font, cornerRadius: CGFloat = 10.0, paddingV: CGFloat = 15.0, paddingH: CGFloat = 15.0, icon: Image? = nil, iconPos: SwiftyButtonIconPos = .LEFT, iconSpacing: CGFloat = 5.0, showIcon: Bool = true, shadow: ShadowProps? = nil, border: BorderProps = BorderProps(color: AppConfig.Buttons.filledFgColor), style: SwiftyButtonStyle = AppConfig.Buttons.style, colors: SwiftyButtonColors = SwiftyButtonColors(), effect: SwiftyButtonEffect = AppConfig.Buttons.effect) {
         self.font = font
         self.cornerRadius = cornerRadius
         self.paddingV = paddingV

@@ -1,5 +1,5 @@
 //
-//  InputField.swift
+//  SwiftyInput.swift
 //
 //  Created by Ali Raza on 21/01/2024.
 
