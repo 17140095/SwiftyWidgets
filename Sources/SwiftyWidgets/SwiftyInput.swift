@@ -115,7 +115,7 @@ public struct SwiftyInput: View {
             HStack() {
                 if !isFocused && showError {
                     Text(errorMsg)
-                        .font(ThemeFonts.SwiftyInput.errorFont)
+                        .font(AppConfig.Inputs.errorFont)
                         .foregroundStyle(.red)
                 }
                 Spacer()
