@@ -8,17 +8,21 @@ import SwiftUI
 
 @available(iOS 15.0, *)
 public struct SwiftyInput: View {
-    var prompt: String
+    @State var prompt: String
     @Binding var text: String
     @State private var isSecure: Bool
     @State private var showError = false
     @FocusState private var isFocused: Bool
-    var delegate: SwiftyInputProtocol?
     @State var errorMsg: String = ""
+    @State var leftViewWidth: CGFloat = 0
+    var delegate: SwiftyInputProtocol?
     var props: SwiftyInputProps
+    var placeholder: String = ""
+    
 
     public init(prompt: String = "Placeholder", text: Binding<String>, props: SwiftyInputProps = SwiftyInputProps(), delegate: SwiftyInputProtocol? = nil) {
-        self.prompt = prompt
+        self.placeholder = prompt
+        self._prompt = State<String>(initialValue: prompt)
         self._text = text
         self.props = props
         self.delegate = delegate
@@ -28,20 +32,52 @@ public struct SwiftyInput: View {
 
     public var body: some View {
         VStack(spacing: 0) {
-            HStack (spacing: 0){
+            HStack (alignment: .bottom, spacing: 0){
                 if let leftView = props.leftView {
                     getOnlyIconLabel(icon: leftView)
                         .font(props.font)
                         .fgStyle(props.rightViewColor)
                         .padding(.trailing, props.leftViewSpace)
+                        .overlay {
+                            GeometryReader(content: { geometry in
+                                Color.clear.onAppear {
+                                    leftViewWidth = geometry.size.width
+                                    print("leftViewSize: \(geometry.size)")
+                                }
+                            })
+                        }
                 }
-
+                
                 getFieldView()
                     .focused($isFocused)
                     .onChangeInput(of: text, delegate: delegate, perform: self.onChangeText(_:))
                     .fgStyle(props.textColor)
                     .textFieldStyle(.plain)
-                    
+                    .overlay(alignment: .bottomLeading) {
+                        HStack {
+                            
+                            Label {
+                                Text(prompt)
+                                    .fgStyle(getFloatingValue() > 0.0 ? props.leftViewColor : props.placeholderColor)
+                            } icon: {
+                                Image(systemName: "circle.fill")
+                                    .fgStyle(.red)
+                            }
+                            .labelStyle(SwiftyInputLabelStyle(props: props))
+                            .font(props.font)
+                            .offset(getOffsetSize())
+                            .scaleEffect(getScaleValue(), anchor: .leading)
+                            
+//                            Text(prompt)
+//                                .offset(getOffsetSize())
+//                                .scaleEffect(getScaleValue(), anchor: .leading)
+//                            
+//                                .fgStyle(getFloatingValue() > 0.0 ? props.leftViewColor : props.placeholderColor)
+                            Spacer()
+                        }
+                        .animation(.easeInOut, value: isFocused)
+                    }
+                
                 HStack(spacing: props.rightViewSpace) {
                     if !self.text.trim().isEmpty && props.showClearIcon {
                         Button {
@@ -65,11 +101,14 @@ public struct SwiftyInput: View {
                 
                 
             }//HStack
+            .padding(.top, 15)
+            .padding(.bottom, getBottomSpaceValue())
             .padding(.horizontal, 10, if: props.style == .BORDERD)
+            .padding(.top, getBorderFloatValue())
             .border(props: props.borderProps ?? BorderProps(), isFocus: isFocused, isError: showError, if: props.style == .BORDERD)
             .background(props.backgroundColor)
             
-            if props.style == .UNDERLINED {
+            if props.style != .BORDERD {
                 withAnimation {
                     Rectangle()
                         .frame(height: isFocused ? props.borderProps?.getFocusWidth() ?? 2.0 : props.borderProps?.width ?? 1.0 )
@@ -96,6 +135,34 @@ public struct SwiftyInput: View {
         .onChangeFocus(of: isFocused, delegate: delegate, perform: self.onFocus(_:))
     }
     
+    private func getFloatingValue() -> CGFloat {
+        var toReturn = 0.0
+        if props.shouldFloat {
+            if isFocused {
+                toReturn = -25
+            } else {
+                toReturn = text.isEmpty ? 0 : -25
+            }
+        }
+        return toReturn
+    }
+    
+    private func getScaleValue() -> CGFloat {
+        
+        return props.shouldFloat && (isFocused || !text.isEmpty) ? 0.8 : 1.0
+    }
+    
+    private func getBorderFloatValue() -> CGFloat {
+        props.style == .BORDERD && props.shouldFloat && (isFocused || !text.isEmpty) ? 10.0 : 0.0
+    }
+    
+    private func getOffsetSize() -> CGSize {
+        let x = (getFloatingValue() < 0.0 && leftViewWidth > 0) ? -(leftViewWidth + 5) : 0.0
+        let y = getFloatingValue()
+        
+        return CGSize(width: x, height: y)
+    }
+    
     private func getBorderColor() -> Color {
         return showError && !isFocused ? .red : props.borderProps?.color ?? ThemeColors.primary
     }
@@ -106,47 +173,22 @@ public struct SwiftyInput: View {
         } icon: {
             icon
         }
+        
     }
     
     @ViewBuilder
     private func getFieldView() -> some View {
         if isSecure {
-            if #available(iOS 15.0, *) {
-                secureField()
-            } else {
-                ZStack {
-                    if text.isEmpty{
-                        getPlaceholder()
-                    }
-                    secureField()
-                }
-            }
+            SecureField("", text: $text, prompt: nil)
+                .font(props.font)
         } else {
-            if #available(iOS 15.0, *) {
-                textField()
-            } else {
-                ZStack {
-                    if text.isEmpty{
-                        getPlaceholder()
-                    }
-                    textField()
-                        .foregroundColor(.blue)
-                }
-                
-            }
+            TextField("", text: $text, prompt: nil)
+                .font(props.font)
         }
     }
     
-    private func secureField() -> some View {
-        SecureField("", text: $text, prompt: getPlaceholder())
-            .font(props.font)
-            .padding(.vertical, 15)
-    }
-    
-    private func textField() -> some View {
-        TextField("", text: $text, prompt: getPlaceholder())
-            .font(props.font)
-            .padding(.vertical, 15)
+    private func getBottomSpaceValue() -> CGFloat {
+        props.style == .BORDERD ? 15 : 8
     }
     
     private func getPlaceholder() -> Text? {
@@ -188,6 +230,9 @@ extension SwiftyInput {
         if props.limit > -1 {
             text = String(value.prefix(props.limit))
         }
+        if !props.shouldFloat {
+            prompt = value.isEmpty ? self.placeholder : ""
+        }
         validate()
     }
     
@@ -215,22 +260,30 @@ extension SwiftyInput {
 #if DEBUG
 @available(iOS 15.0, *)
 struct TestContentView: View {
-    @State private var text = "20"
+    @State private var text = ""
+    @State private var text2 = ""
+    @State private var text3 = ""
+    
     init(text: String = "") {
-//        ThemeFonts.SwiftyInput.font = .headline
+//        ThemeFonts.SwiftyInput.font = Font.system(size: 30)
+//        ThemeColors.primary = .green
         self.text = text
     }
     var body: some View {
-        VStack {
-            SwiftyInput(text: $text, props: SwiftyInputProps(showClearIcon: false, isMandatory: true))
-            SwiftyInput(text: $text, props: SwiftyInputProps(leftView: Image(systemName: "person")))
-            SwiftyInput(text: $text, props: SwiftyInputProps(leftView: Image(systemName: "person")))
-            SwiftyInput(text: $text, props: SwiftyInputProps(leftView: Image(systemName: "person"), isSecure: true))
-            SwiftyInput(text: $text, props: SwiftyInputProps(leftView: Image(systemName: "person"), rightView: Image(systemName: "person"), isSecure: true))
-            SwiftyInput(text: $text, props: SwiftyInputProps(leftView: Image(systemName: "person"), rightView: Image(systemName: "person")))
-            SwiftyInput(text: $text, props: SwiftyInputProps(isSecure: true, style: .BORDERD, isMandatory: true))
-            SwiftyInput(text: $text, props: SwiftyInputProps(isSecure: true,  style: .BORDERD))
-                            
+        ScrollView {
+            VStack {
+                SwiftyInput(text: $text, props: SwiftyInputProps(showClearIcon: false, shouldFloat: true, style: .UNDERLINED, isMandatory: true))
+                SwiftyInput(text: $text2, props: SwiftyInputProps(leftView: Image(systemName: "person")))
+                SwiftyInput(text: $text3, props: SwiftyInputProps(leftView: Image(systemName: "person")))
+                SwiftyInput(text: $text, props: SwiftyInputProps(leftView: Image(systemName: "person"), isSecure: true, shouldFloat: true))
+                SwiftyInput(text: $text, props: SwiftyInputProps(leftView: Image(systemName: "person"), rightView: Image(systemName: "person"), isSecure: true, shouldFloat: true))
+                SwiftyInput(text: $text, props: SwiftyInputProps(leftView: Image(systemName: "person"), rightView: Image(systemName: "person"), leftViewSpace: 20, shouldFloat: true, style: .UNDERLINED))
+                SwiftyInput(text: $text, props: SwiftyInputProps(leftView: Image(systemName: "person"), rightView: Image(systemName: "person"), shouldFloat: true, style: .BORDERD, isMandatory: true))
+                SwiftyInput(text: $text, props: SwiftyInputProps(leftView: Image(systemName: "person"), rightView: Image(systemName: "person"), style: .BORDERD))
+                SwiftyInput(text: $text, props: SwiftyInputProps(isSecure: true, style: .BORDERD, isMandatory: true))
+                SwiftyInput(text: $text, props: SwiftyInputProps(isSecure: true, shouldFloat: true,  style: .BORDERD))
+                
+            }
         }
     }
 }
@@ -263,13 +316,14 @@ public struct SwiftyInputProps {
     public var borderProps: BorderProps?
     public var font: Font
     public var isSecure: Bool
+    public var shouldFloat: Bool
     public var style: InputFieldStyle
     public var limit: Int
     public var regex: String
     public var errors: ErrorMsgs
     public var isMandatory: Bool
     
-    public init(leftView: Image? = nil, rightView: Image? = nil, leftViewSpace: CGFloat = 5.0, rightViewSpace: CGFloat = 5.0, leftViewColor: Color = ThemeColors.SwiftyInput.leftView, rightViewColor: Color = ThemeColors.SwiftyInput.rightView, clearIcon: Image = Image(systemName: "multiply"), showClearIcon: Bool = true, secureIcons: String = "eye.fill,eye.slash.fill", cursorColor: Color = ThemeColors.SwiftyInput.tint, textColor: Color = ThemeColors.SwiftyInput.forground, placeholderColor: Color = ThemeColors.SwiftyInput.placeholderColor, clearIconColor: Color = ThemeColors.SwiftyInput.tint, backgroundColor: Color = ThemeColors.SwiftyInput.background, borderProps: BorderProps? = nil, font: Font  = ThemeFonts.SwiftyInput.font, isSecure: Bool = false, style: InputFieldStyle = .UNDERLINED, limit: Int = -1, regex: String = ".*", errors: ErrorMsgs = ErrorMsgs(), isMandatory: Bool = false) {
+    public init(leftView: Image? = nil, rightView: Image? = nil, leftViewSpace: CGFloat = 5.0, rightViewSpace: CGFloat = 5.0, leftViewColor: Color = ThemeColors.SwiftyInput.leftView, rightViewColor: Color = ThemeColors.SwiftyInput.rightView, clearIcon: Image = Image(systemName: "multiply"), showClearIcon: Bool = true, secureIcons: String = "eye.fill,eye.slash.fill", cursorColor: Color = ThemeColors.SwiftyInput.tint, textColor: Color = ThemeColors.SwiftyInput.forground, placeholderColor: Color = ThemeColors.SwiftyInput.placeholderColor, clearIconColor: Color = ThemeColors.SwiftyInput.tint, backgroundColor: Color = ThemeColors.SwiftyInput.background, borderProps: BorderProps? = nil, font: Font  = ThemeFonts.SwiftyInput.font, isSecure: Bool = false, shouldFloat: Bool = false, style: InputFieldStyle = .UNDERLINED, limit: Int = -1, regex: String = ".*", errors: ErrorMsgs = ErrorMsgs(), isMandatory: Bool = false) {
         
         self.leftView = leftView
         self.rightView = rightView
@@ -293,10 +347,7 @@ public struct SwiftyInputProps {
         self.regex = regex
         self.errors = errors
         self.isMandatory = isMandatory
-    }
-    
-    public func showBorder()-> Bool {
-        self.style == .BORDERD
+        self.shouldFloat = shouldFloat
     }
 }
 
@@ -316,5 +367,24 @@ public struct ErrorMsgs {
     
     public init(){
         
+    }
+}
+
+@available(iOS 15.0, *)
+fileprivate struct SwiftyInputLabelStyle: LabelStyle {
+    fileprivate var props: SwiftyInputProps
+    
+    fileprivate init(props: SwiftyInputProps) {
+        self.props = props
+    }
+    fileprivate func makeBody(configuration: Configuration) -> some View {
+        HStack(spacing: 5) {
+            configuration.title
+                .font(props.font)
+            if props.isMandatory {
+                configuration.icon
+                    .font(Font.system(size: 5))
+            }
+        }
     }
 }
