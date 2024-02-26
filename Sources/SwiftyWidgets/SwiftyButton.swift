@@ -144,7 +144,7 @@ public struct SwiftyButtonProps {
     public var colors: SwiftyButtonColors
     public var effect: SwiftyButtonEffect
     
-    public init(font: Font = ThemeFonts.SwiftyButton.font, cornerRadius: CGFloat = 10.0, paddingV: CGFloat = 15.0, paddingH: CGFloat = 15.0, icon: Image? = nil, iconPos: SwiftyButtonIconPos = .LEFT, iconSpacing: CGFloat = 5.0, showIcon: Bool = true, shadow: ShadowProps? = nil, border: BorderProps = BorderProps(color: ThemeColors.SwiftyButton.filledFg), style: SwiftyButtonStyle = .FILLED, colors: SwiftyButtonColors = SwiftyButtonColors(), effect: SwiftyButtonEffect = .SCALER) {
+    public init(font: Font = AppConfig.Buttons.font, cornerRadius: CGFloat = 10.0, paddingV: CGFloat = 15.0, paddingH: CGFloat = 15.0, icon: Image? = nil, iconPos: SwiftyButtonIconPos = .LEFT, iconSpacing: CGFloat = 5.0, showIcon: Bool = true, shadow: ShadowProps? = nil, border: BorderProps = BorderProps(color: AppConfig.Buttons.filledFgColor), style: SwiftyButtonStyle = AppConfig.Buttons.Style, colors: SwiftyButtonColors = SwiftyButtonColors(), effect: SwiftyButtonEffect = AppConfig.Buttons.effect) {
         self.font = font
         self.cornerRadius = cornerRadius
         self.paddingV = paddingV
@@ -182,7 +182,7 @@ public struct SwiftyButtonColors {
     public var outlinedFg: Color
     public var outlinedBg: Color
     
-    public init(filledFg: Color = ThemeColors.SwiftyButton.filledFg, filledBg: Color = ThemeColors.SwiftyButton.filledBg, outlinedFg: Color = ThemeColors.SwiftyButton.outlinedFg, outlinedBg: Color = ThemeColors.SwiftyButton.outlinedBg) {
+    public init(filledFg: Color = AppConfig.Buttons.filledFgColor, filledBg: Color = AppConfig.Buttons.filledBgColor, outlinedFg: Color = AppConfig.Buttons.outlinedFgColor, outlinedBg: Color = AppConfig.Buttons.outlinedBgColor) {
         
         self.filledFg = filledFg
         self.filledBg = filledBg
@@ -206,7 +206,7 @@ public struct BorderProps {
     public var color: Color
     public var width: CGFloat
     
-    public init(color: Color = ThemeColors.primary, width: CGFloat = 1.0) {
+    public init(color: Color = AppConfig.primaryColor, width: CGFloat = 1.0) {
         self.color = color
         self.width = width
     }
@@ -223,7 +223,7 @@ public struct ShadowProps {
     public var x: CGFloat
     public var y: CGFloat
     
-    public init(color: Color = ThemeColors.shadow, radius: CGFloat = 5.0, x: CGFloat = 5.0, y: CGFloat = 5.0) {
+    public init(color: Color = AppConfig.shadowColor, radius: CGFloat = 5.0, x: CGFloat = 5.0, y: CGFloat = 5.0) {
         self.color = color
         self.radius = radius
         self.x = x
