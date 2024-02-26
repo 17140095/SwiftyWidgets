@@ -1,5 +1,5 @@
 //
-//  InputField.swift
+//  SwiftyInput.swift
 //
 //  Created by Ali Raza on 21/01/2024.
 
@@ -67,12 +67,6 @@ public struct SwiftyInput: View {
                             .font(props.font)
                             .offset(getOffsetSize())
                             .scaleEffect(getScaleValue(), anchor: .leading)
-                            
-//                            Text(prompt)
-//                                .offset(getOffsetSize())
-//                                .scaleEffect(getScaleValue(), anchor: .leading)
-//                            
-//                                .fgStyle(getFloatingValue() > 0.0 ? props.leftViewColor : props.placeholderColor)
                             Spacer()
                         }
                         .animation(.easeInOut, value: isFocused)
@@ -121,7 +115,7 @@ public struct SwiftyInput: View {
             HStack() {
                 if !isFocused && showError {
                     Text(errorMsg)
-                        .font(ThemeFonts.SwiftyInput.errorFont)
+                        .font(AppConfig.Inputs.errorFont)
                         .foregroundStyle(.red)
                 }
                 Spacer()
@@ -164,7 +158,7 @@ public struct SwiftyInput: View {
     }
     
     private func getBorderColor() -> Color {
-        return showError && !isFocused ? .red : props.borderProps?.color ?? ThemeColors.primary
+        return showError && !isFocused ? .red : props.borderProps?.color ?? AppConfig.primaryColor
     }
     
     @ViewBuilder
@@ -208,19 +202,13 @@ public struct SwiftyInput: View {
         Button {
             self.isSecure.toggle()
         } label: {
-            if let iconName = getSecureIconName() {
-                getOnlyIconLabel(icon: Image(systemName: iconName))
+                getOnlyIconLabel(icon: getSecureIcon())
                     .font(props.font)
                     .fgStyle(props.rightViewColor)
-            }
         }
     }
-    private func getSecureIconName() -> String? {
-        let icons = props.secureIcons.split(separator: ",")
-        if nil == icons[0] || nil == icons[1] {
-            return nil
-        }
-        return isSecure ? "\(icons[0])": "\(icons[1])"
+    private func getSecureIcon() -> Image {
+        isSecure ? props.secureIcons.secured : props.secureIcons.unsecured
     }
 }
 
@@ -307,7 +295,7 @@ public struct SwiftyInputProps {
     public var rightViewColor: Color
     public var clearIcon: Image
     public var showClearIcon: Bool
-    public var secureIcons: String
+    public var secureIcons: SwiftyInputSecureIcons
     public var cursorColor: Color
     public var textColor: Color
     public var placeholderColor: Color
@@ -317,13 +305,37 @@ public struct SwiftyInputProps {
     public var font: Font
     public var isSecure: Bool
     public var shouldFloat: Bool
-    public var style: InputFieldStyle
+    public var style: SwiftyInputStyle
     public var limit: Int
     public var regex: String
     public var errors: ErrorMsgs
     public var isMandatory: Bool
     
-    public init(leftView: Image? = nil, rightView: Image? = nil, leftViewSpace: CGFloat = 5.0, rightViewSpace: CGFloat = 5.0, leftViewColor: Color = ThemeColors.SwiftyInput.leftView, rightViewColor: Color = ThemeColors.SwiftyInput.rightView, clearIcon: Image = Image(systemName: "multiply"), showClearIcon: Bool = true, secureIcons: String = "eye.fill,eye.slash.fill", cursorColor: Color = ThemeColors.SwiftyInput.tint, textColor: Color = ThemeColors.SwiftyInput.forground, placeholderColor: Color = ThemeColors.SwiftyInput.placeholderColor, clearIconColor: Color = ThemeColors.SwiftyInput.tint, backgroundColor: Color = ThemeColors.SwiftyInput.background, borderProps: BorderProps? = nil, font: Font  = ThemeFonts.SwiftyInput.font, isSecure: Bool = false, shouldFloat: Bool = false, style: InputFieldStyle = .UNDERLINED, limit: Int = -1, regex: String = ".*", errors: ErrorMsgs = ErrorMsgs(), isMandatory: Bool = false) {
+    public init(
+        leftView: Image? = nil,
+        rightView: Image? = nil,
+        leftViewSpace: CGFloat = AppConfig.Inputs.leftViewSpace,
+        rightViewSpace: CGFloat = AppConfig.Inputs.rightViewSpace,
+        leftViewColor: Color = AppConfig.Inputs.leftIconColor,
+        rightViewColor: Color = AppConfig.Inputs.rightIconColor,
+        clearIcon: Image = AppConfig.Inputs.clearIcon,
+        showClearIcon: Bool = true,
+        secureIcons: SwiftyInputSecureIcons = AppConfig.Inputs.securedIcons,
+        cursorColor: Color = AppConfig.Inputs.cursorColor,
+        textColor: Color = AppConfig.Inputs.foregroundColor,
+        placeholderColor: Color = AppConfig.Inputs.placeholderColor,
+        clearIconColor: Color = AppConfig.Inputs.cursorColor,
+        backgroundColor: Color = AppConfig.Inputs.backgroundColor,
+        borderProps: BorderProps? = nil,
+        font: Font  = AppConfig.Inputs.font,
+        isSecure: Bool = false,
+        shouldFloat: Bool = AppConfig.Inputs.shouldFloat,
+        style: SwiftyInputStyle = AppConfig.Inputs.style,
+        limit: Int = -1,
+        regex: String = ".*",
+        errors: ErrorMsgs = AppConfig.Inputs.errorMsgs,
+        isMandatory: Bool = false
+    ) {
         
         self.leftView = leftView
         self.rightView = rightView
@@ -351,7 +363,7 @@ public struct SwiftyInputProps {
     }
 }
 
-public enum InputFieldStyle {
+public enum SwiftyInputStyle {
     case BORDERD, UNDERLINED
 }
 
@@ -367,6 +379,20 @@ public struct ErrorMsgs {
     
     public init(){
         
+    }
+}
+
+@available(iOS 13.0, *)
+public struct SwiftyInputSecureIcons {
+    public let secured: Image
+    public let unsecured: Image
+    
+    public init(
+        secured: Image = Image(systemName: "eye.fill"),
+        unsecured: Image = Image(systemName: "eye.slash.fill")
+    ) {
+        self.secured = secured
+        self.unsecured = unsecured
     }
 }
 

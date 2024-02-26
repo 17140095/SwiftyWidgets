@@ -57,9 +57,9 @@ open class LoadingViews {
             VStack {
                 ProgressView()
                     .progressViewStyle(CircularProgressViewStyle())
-                    .tint(ThemeColors.secondary)
+                    .tint(AppConfig.secondaryColor)
                     .padding()
-                    .background(ThemeColors.primary)
+                    .background(AppConfig.primaryColor)
                     .cornerRadius(10)
             }
             .transition(.opacity)
