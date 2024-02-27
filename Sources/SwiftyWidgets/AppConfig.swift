@@ -45,4 +45,9 @@ public enum AppConfig {
         public static var style: SwiftyInputStyle = .UNDERLINED
         public static var securedIcons = SwiftyInputSecureIcons()
     }
+    
+    public enum Alert {
+        public static var font = AppConfig.font
+    }
+    
 }

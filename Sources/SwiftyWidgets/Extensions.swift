@@ -152,6 +152,14 @@ extension View {
             self
         }
     }
+    @ViewBuilder
+    public func padding(if condition: Bool) -> some View {
+        if condition {
+            self.padding()
+        } else {
+            self
+        }
+    }
     
     @ViewBuilder
     public func shadow(props: ShadowProps?) -> some View {
