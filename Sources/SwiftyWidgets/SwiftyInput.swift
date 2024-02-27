@@ -49,28 +49,6 @@ public struct SwiftyInput: View {
                 }
                 
                 getFieldView()
-                    .focused($isFocused)
-                    .onChangeInput(of: text, delegate: delegate, perform: self.onChangeText(_:))
-                    .fgStyle(props.textColor)
-                    .textFieldStyle(.plain)
-                    .overlay(alignment: .bottomLeading) {
-                        HStack {
-                            
-                            Label {
-                                Text(prompt)
-                                    .fgStyle(getFloatingValue() > 0.0 ? props.leftViewColor : props.placeholderColor)
-                            } icon: {
-                                Image(systemName: "circle.fill")
-                                    .fgStyle(.red)
-                            }
-                            .labelStyle(SwiftyInputLabelStyle(props: props))
-                            .font(props.font)
-                            .offset(getOffsetSize())
-                            .scaleEffect(getScaleValue(), anchor: .leading)
-                            Spacer()
-                        }
-                        .animation(.easeInOut, value: isFocused)
-                    }
                 
                 HStack(spacing: props.rightViewSpace) {
                     if !self.text.trim().isEmpty && props.showClearIcon {
@@ -84,7 +62,7 @@ public struct SwiftyInput: View {
                     }
                     
                     if props.isSecure {
-                        getSecureIconView()
+                        getSecureIconButton()
                     }
                     if let rightView = props.rightView {
                        getOnlyIconLabel(icon: rightView)
@@ -130,15 +108,7 @@ public struct SwiftyInput: View {
     }
     
     private func getFloatingValue() -> CGFloat {
-        var toReturn = 0.0
-        if props.shouldFloat {
-            if isFocused {
-                toReturn = -25
-            } else {
-                toReturn = text.isEmpty ? 0 : -25
-            }
-        }
-        return toReturn
+        props.shouldFloat && (isFocused || !text.isEmpty) ? -25 : 0
     }
     
     private func getScaleValue() -> CGFloat {
@@ -151,34 +121,13 @@ public struct SwiftyInput: View {
     }
     
     private func getOffsetSize() -> CGSize {
-        let x = (getFloatingValue() < 0.0 && leftViewWidth > 0) ? -(leftViewWidth + 5) : 0.0
-        let y = getFloatingValue()
+        let width = (getFloatingValue() < 0.0 && leftViewWidth > 0) ? -(leftViewWidth + 5) : 0.0
         
-        return CGSize(width: x, height: y)
+        return CGSize(width: width, height: getFloatingValue())
     }
     
     private func getBorderColor() -> Color {
         return showError && !isFocused ? .red : props.borderProps?.color ?? AppConfig.primaryColor
-    }
-    
-    @ViewBuilder
-    private func getOnlyIconLabel(icon: Image) -> some View {
-        Label {
-        } icon: {
-            icon
-        }
-        
-    }
-    
-    @ViewBuilder
-    private func getFieldView() -> some View {
-        if isSecure {
-            SecureField("", text: $text, prompt: nil)
-                .font(props.font)
-        } else {
-            TextField("", text: $text, prompt: nil)
-                .font(props.font)
-        }
     }
     
     private func getBottomSpaceValue() -> CGFloat {
@@ -198,7 +147,55 @@ public struct SwiftyInput: View {
     }
     
     @ViewBuilder
-    private func getSecureIconView()-> some View {
+    private func getOnlyIconLabel(icon: Image) -> some View {
+        Label {
+        } icon: {
+            icon
+        }
+        
+    }
+    
+    @ViewBuilder
+    private func getFieldView() -> some View {
+        getField()
+            .focused($isFocused)
+            .onChangeInput(of: text, delegate: delegate, perform: self.onChangeText(_:))
+            .fgStyle(props.textColor)
+            .textFieldStyle(.plain)
+            .overlay(alignment: .bottomLeading) {
+                HStack {
+                    
+                    Label {
+                        Text(prompt)
+                            .fgStyle(getFloatingValue() > 0.0 ? props.leftViewColor : props.placeholderColor)
+                    } icon: {
+                        if !prompt.isEmpty {
+                            Image(systemName: "circle.fill")
+                                .fgStyle(.red)
+                        }
+                    }
+                    .labelStyle(SwiftyInputLabelStyle(props: props))
+                    .font(props.font)
+                    .offset(getOffsetSize())
+                    .scaleEffect(getScaleValue(), anchor: .leading)
+                    Spacer()
+                }
+                .animation(.easeInOut, value: isFocused)
+            }
+    }
+    
+    @ViewBuilder
+    private func getField() -> some View {
+        if isSecure {
+            SecureField("", text: $text, prompt: nil)
+                .font(props.font)
+        } else {
+            TextField("", text: $text, prompt: nil)
+                .font(props.font)
+        }
+    }
+    @ViewBuilder
+    private func getSecureIconButton()-> some View {
         Button {
             self.isSecure.toggle()
         } label: {
