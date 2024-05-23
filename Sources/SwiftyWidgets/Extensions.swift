@@ -24,13 +24,13 @@ extension UIColor {
         var green: CGFloat = 0
         var blue: CGFloat = 0
         var alpha: CGFloat = 0
-
+        
         let multiplier = CGFloat(255.999999)
-
+        
         guard self.getRed(&red, green: &green, blue: &blue, alpha: &alpha) else {
             return nil
         }
-
+        
         if alpha == 1.0 {
             return String(
                 format: "#%02lX%02lX%02lX",
@@ -68,7 +68,7 @@ extension Color {
         default:
             (a, r, g, b) = (1, 1, 1, 0)
         }
-
+        
         self.init(
             .sRGB,
             red: Double(r) / 255,
@@ -79,21 +79,21 @@ extension Color {
     }
     
     func uiColor() -> UIColor {
-
+        
         if #available(iOS 14.0, *) {
             return UIColor(self)
         }
-
+        
         let components = self.components()
         return UIColor(red: components.r, green: components.g, blue: components.b, alpha: components.a)
     }
-
+    
     private func components() -> (r: CGFloat, g: CGFloat, b: CGFloat, a: CGFloat) {
-
+        
         let scanner = Scanner(string: self.description.trimmingCharacters(in: CharacterSet.alphanumerics.inverted))
         var hexNumber: UInt64 = 0
         var r: CGFloat = 0.0, g: CGFloat = 0.0, b: CGFloat = 0.0, a: CGFloat = 0.0
-
+        
         let result = scanner.scanHexInt64(&hexNumber)
         if result {
             r = CGFloat((hexNumber & 0xff000000) >> 24) / 255
@@ -143,7 +143,14 @@ extension View {
             self
         }
     }
-    
+    @ViewBuilder
+    public func padding(_ insets: EdgeInsets, if condition: Bool) -> some View {
+        if condition {
+            self.padding(insets)
+        } else {
+            self
+        }
+    }
     @ViewBuilder
     public func padding(_ edges: Edge.Set = .all, _ length: CGFloat? = nil, if condition: Bool) -> some View {
         if condition {
@@ -153,9 +160,9 @@ extension View {
         }
     }
     @ViewBuilder
-    public func padding(if condition: Bool) -> some View {
+    public func padding(if condition: Bool,  edges: Edge.Set, _ length: CGFloat? = nil) -> some View {
         if condition {
-            self.padding()
+            self.padding(edges, length)
         } else {
             self
         }
@@ -262,16 +269,47 @@ extension View {
         }
     }
     
+    @ViewBuilder
+    public func overlay<V>(alignment: Alignment = .center, if condition: Bool, @ViewBuilder content: () -> V) -> some View where V : View {
+        if condition {
+            self.overlay(alignment: alignment, content: content)
+        } else {
+            self
+        }
+    }
     
     public func showLoading(isLoading: Binding<Bool>) -> some View {
-            ZStack {
-                self // Original content
-                    .disabled(isLoading.wrappedValue)
-                    .blur(radius: isLoading.wrappedValue ? 3 : 0)
-
-                if isLoading.wrappedValue {
-                    LoadingViews.getInstance().getLoader()
-                }
+        ZStack {
+            self // Original content
+                .disabled(isLoading.wrappedValue)
+                .blur(radius: isLoading.wrappedValue ? 3 : 0)
+            
+            if isLoading.wrappedValue {
+                LoadingViews.getInstance().getLoader()
             }
         }
+    }
+    
+    @ViewBuilder
+    public func swiftyAlert(
+        isPresented: Binding<Bool>,
+        title: String,
+        message: String,
+        primaryAction: (name: String, perform: (()-> Void)) = ("OK", {}),
+        secondaryAction: (name: String, perform: (()-> Void)) = ("", {}),
+        props: SwiftyAlertProps = SwiftyAlertProps()
+    )-> some View {
+        if isPresented.wrappedValue {
+            ZStack {
+                self // Original content
+                    .disabled(isPresented.wrappedValue)
+                    .blur(radius: isPresented.wrappedValue ? 3 : 0)
+                SwiftyAlert(isPresented: isPresented, title: title, message: message, props: props, primaryAction: primaryAction, secondaryAction: secondaryAction)
+            }
+            
+        } else {
+            self
+        }
+    }
+    
 }

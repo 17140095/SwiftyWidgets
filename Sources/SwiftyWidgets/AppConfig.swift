@@ -8,13 +8,14 @@
 import Foundation
 import SwiftUI
 
-@available(iOS 13.0, *)
+@available(iOS 15.0, *)
 public enum AppConfig {
     public static var font = Font.body
     public static var primaryColor = Color(hex: "#92C7CF")
     public static var secondaryColor = Color(hex: "#E5E1DA")
     public static var backgroundColor = Color(hex: "#FBF9F1")
     public static var shadowColor = Color.gray
+    public static var defaultTextColor = Color(hex: "#454545")
     
     public enum Buttons {
         public static var font = AppConfig.font
@@ -44,10 +45,30 @@ public enum AppConfig {
         public static var shouldFloat = false
         public static var style: SwiftyInputStyle = .UNDERLINED
         public static var securedIcons = SwiftyInputSecureIcons()
+        public static var cornerRadius: CGFloat = 0
+        public static var hPaddingForBordered: CGFloat = 10
     }
     
     public enum Alert {
+        public static var background = AppConfig.backgroundColor
         public static var font = AppConfig.font
+        public static var iconFont = AppConfig.font
+        public static var cornerRadius = 30.0
+        public static var primaryColor: Color = AppConfig.primaryColor
+        public static var secondaryColor: Color = AppConfig.secondaryColor
+        public static var animationDuration: CGFloat = 0.5
+        public static var animationStyle: AnyTransition = .slide
+        public static var actionsStyle: SwiftyButtonStyle = .FILLED
+        public static var shouldActionsVertical: Bool = false
+        public static var actionsSpacing: CGFloat = 0.0
+        public static var actionsCornerRadius: CGFloat = 0.0
+        public static var padding: EdgeInsets = EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0)
+        public static var headerPadding: EdgeInsets = EdgeInsets(top: 20, leading: 10, bottom: 10, trailing: 10)
+        public static var titlePadding: EdgeInsets = EdgeInsets(top: 10, leading: 0, bottom: 0, trailing: 0)
+        public static var msgPadding: EdgeInsets = EdgeInsets(top: 20, leading: 10, bottom: 20, trailing: 10)
+        public static var actionsPadding: EdgeInsets = EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0)
+        public static var headerImageSize: CGFloat = 50
+        public static var messageColor = AppConfig.defaultTextColor
     }
     
 }
