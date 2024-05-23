@@ -75,10 +75,13 @@ public struct SwiftyInput: View {
             }//HStack
             .padding(.top, 15)
             .padding(.bottom, getBottomSpaceValue())
-            .padding(.horizontal, 10, if: props.style == .BORDERD)
+            .padding(.horizontal, props.hPaddingForBordered, if: props.style == .BORDERD)
             .padding(.top, getBorderFloatValue())
-            .border(props: props.borderProps ?? BorderProps(), isFocus: isFocused, isError: showError, if: props.style == .BORDERD)
             .background(props.backgroundColor)
+            .overlay(if: props.style == .BORDERD) {
+                RoundedRectangle(cornerRadius: props.cornerRadius)
+                    .stroke(getBorderColor(), lineWidth: getBorderWidth())
+            }
             
             if props.style != .BORDERD {
                 withAnimation {
@@ -105,6 +108,10 @@ public struct SwiftyInput: View {
             isFocused = true
         }
         .onChangeFocus(of: isFocused, delegate: delegate, perform: self.onFocus(_:))
+    }
+  
+    private func getBorderWidth() -> CGFloat {
+        isFocused ? props.borderProps?.getFocusWidth() ?? 2 : props.borderProps?.width ?? 1
     }
     
     private func getFloatingValue() -> CGFloat {
@@ -250,8 +257,6 @@ struct TestContentView: View {
     @State private var text3 = ""
     
     init(text: String = "") {
-//        ThemeFonts.SwiftyInput.font = Font.system(size: 30)
-//        ThemeColors.primary = .green
         self.text = text
     }
     var body: some View {
@@ -299,6 +304,8 @@ public struct SwiftyInputProps {
     public var clearIconColor: Color
     public var backgroundColor: Color
     public var borderProps: BorderProps?
+    public var cornerRadius: CGFloat
+    public var hPaddingForBordered: CGFloat
     public var font: Font
     public var isSecure: Bool
     public var shouldFloat: Bool
@@ -324,6 +331,8 @@ public struct SwiftyInputProps {
         clearIconColor: Color = AppConfig.Inputs.cursorColor,
         backgroundColor: Color = AppConfig.Inputs.backgroundColor,
         borderProps: BorderProps? = nil,
+        cornerRadius: CGFloat = AppConfig.Inputs.cornerRadius,
+        hPaddingForBordered: CGFloat = AppConfig.Inputs.hPaddingForBordered,
         font: Font  = AppConfig.Inputs.font,
         isSecure: Bool = false,
         shouldFloat: Bool = AppConfig.Inputs.shouldFloat,
@@ -349,6 +358,8 @@ public struct SwiftyInputProps {
         self.clearIconColor = clearIconColor
         self.backgroundColor = backgroundColor
         self.borderProps = borderProps
+        self.cornerRadius = cornerRadius
+        self.hPaddingForBordered = hPaddingForBordered
         self.font = font
         self.isSecure = isSecure
         self.style = style

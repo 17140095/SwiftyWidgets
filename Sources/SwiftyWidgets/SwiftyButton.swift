@@ -184,7 +184,7 @@ public struct SwiftyButtonProps {
     }
 }
 
-@available(iOS 13.0, *)
+@available(iOS 15.0, *)
 public struct SwiftyButtonColors {
     public var filledFg: Color
     public var filledBg: Color
@@ -199,6 +199,14 @@ public struct SwiftyButtonColors {
         self.outlinedBg = outlinedBg
     }
     
+    public init(primary: Color, secondary: Color) {
+        self.filledFg = secondary
+        self.filledBg = primary
+        
+        self.outlinedFg = primary
+        self.outlinedBg = secondary
+    }
+    
     public func forBackground(_ style: SwiftyButtonStyle) -> Color {
         style == .FILLED ? self.filledBg : self.outlinedBg
     }
@@ -210,7 +218,7 @@ public struct SwiftyButtonColors {
     }
 }
 
-@available(iOS 13.0, *)
+@available(iOS 15.0, *)
 public struct BorderProps {
     public var color: Color
     public var width: CGFloat
@@ -225,7 +233,7 @@ public struct BorderProps {
     }
 }
 
-@available(iOS 13.0, *)
+@available(iOS 15.0, *)
 public struct ShadowProps {
     public var color: Color
     public var radius: CGFloat
