@@ -9,12 +9,15 @@ import Foundation
 import SwiftUI
 
 extension String {
-    public func trim() -> String {
+    public var isNotEmpty: Bool {
+        !self.isEmpty
+    }
+    public var trim: String {
         self.trimmingCharacters(in: .whitespacesAndNewlines)
     }
     
-    public func isBlank() -> Bool {
-        self.trim().isEmpty
+    public var isBlank: Bool {
+        self.trim.isEmpty
     }
 }
 extension Bundle {

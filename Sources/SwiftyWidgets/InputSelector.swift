@@ -51,7 +51,7 @@ public struct InputSelectorProps {
         cornerRadius: CGFloat = AppConfig.Selectors.InputSelector.cornerRadius,
         primaryColor: Color = AppConfig.Selectors.InputSelector.primaryColor,
         backgroundColor: Color = AppConfig.Selectors.InputSelector.backgroundColor,
-        image: Image = Image(systemName: "arrowtriangle.down.fill")
+        image: Image = AppConfig.Selectors.InputSelector.image
     ) {
         self.font = font
         self.cornerRadius = cornerRadius

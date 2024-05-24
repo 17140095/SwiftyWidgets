@@ -16,6 +16,7 @@ public enum AppConfig {
     public static var backgroundColor = Color(hex: "#FBF9F1")
     public static var shadowColor = Color.gray
     public static var defaultTextColor = Color(hex: "#454545")
+    public static var promptColor = Color.gray
     public static var navigationTitleFont = Font.system(size: 20)
     public static var navigationTitleColor = AppConfig.primaryColor
     public static var navigationBackButtonView: (()-> AnyView)? = nil
@@ -100,6 +101,22 @@ public enum AppConfig {
             public static var backgroundColor = Color.white
             public static var image = Image(systemName: "arrowtriangle.down.fill")
         }
+        
+        public enum CountrySelector {
+            public static var font = AppConfig.font
+            public static var cornerRadius: CGFloat = 10
+            public static var textColor = AppConfig.defaultTextColor
+            public static var promptColor = AppConfig.promptColor
+            public static var background = Color.white
+            public static var showTitle = true
+            public static var showFlag = true
+            public static var showCode = false
+            public static var showPrompt = true
+            public static var titleAlign: Alignment = .leading
+            public static var arrowImage: Image = Image(systemName: "arrow.down")
+            public static var checkImage: Image = Image(systemName: "checkmark")
+        }
+        
     }
     
 }

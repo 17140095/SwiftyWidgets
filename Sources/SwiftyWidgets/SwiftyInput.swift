@@ -51,7 +51,7 @@ public struct SwiftyInput: View {
                 getFieldView()
                 
                 HStack(spacing: props.rightViewSpace) {
-                    if !self.text.trim().isEmpty && props.showClearIcon {
+                    if !self.text.trim.isEmpty && props.showClearIcon {
                         Button {
                             self.text = ""
                         } label: {
@@ -237,7 +237,7 @@ extension SwiftyInput {
     }
     
     private func validate() {
-        if props.isMandatory && text.isBlank() {
+        if props.isMandatory && text.isBlank {
             errorMsg = props.errors.mandatory
             showError = true
         } else if text.range(of: props.regex, options: .regularExpression) == nil {
