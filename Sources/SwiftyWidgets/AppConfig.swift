@@ -92,6 +92,14 @@ public enum AppConfig {
             public static var padding: EdgeInsets = EdgeInsets(top: 10, leading: 0, bottom: 10, trailing: 0)
             public static var borderWidth: CGFloat = 2
         }
+        
+        public enum InputSelector {
+            public static var font = AppConfig.font
+            public static var cornerRadius: CGFloat = 10
+            public static var primaryColor = AppConfig.primaryColor
+            public static var backgroundColor = Color.white
+            public static var image = Image(systemName: "arrowtriangle.down.fill")
+        }
     }
     
 }
