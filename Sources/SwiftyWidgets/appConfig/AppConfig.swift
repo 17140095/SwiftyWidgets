@@ -16,6 +16,7 @@ public enum AppConfig {
     public static var backgroundColor = Color(hex: "#FBF9F1")
     public static var shadowColor = Color.gray
     public static var defaultTextColor = Color(hex: "#454545")
+    public static var promptColor = Color.gray
     public static var navigationTitleFont = Font.system(size: 20)
     public static var navigationTitleColor = AppConfig.primaryColor
     public static var navigationBackButtonView: (()-> AnyView)? = nil
@@ -72,6 +73,50 @@ public enum AppConfig {
         public static var actionsPadding: EdgeInsets = EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0)
         public static var headerImageSize: CGFloat = 50
         public static var messageColor = AppConfig.defaultTextColor
+    }
+    
+    public enum Selectors {
+        public enum ImageSelector {
+            public static var color = AppConfig.primaryColor
+            public static var width: CGFloat = 3
+        }
+        
+        public enum SegmentedSelector {
+            public static var font: Font = AppConfig.font
+            public static var cRadius: CGFloat = 10.0
+            public static var primaryColor: Color = AppConfig.primaryColor
+            public static var secondaryColor: Color = AppConfig.secondaryColor
+            public static var showBorder: Bool = false
+            public static var roundStyle: PickerRoundStyle = .NO_ROUND
+            public static var spacing: CGFloat = 1
+            public static var direction: Axis.Set = .horizontal
+            public static var padding: EdgeInsets = EdgeInsets(top: 10, leading: 0, bottom: 10, trailing: 0)
+            public static var borderWidth: CGFloat = 2
+        }
+        
+        public enum InputSelector {
+            public static var font = AppConfig.font
+            public static var cornerRadius: CGFloat = 10
+            public static var primaryColor = AppConfig.primaryColor
+            public static var backgroundColor = Color.white
+            public static var image = Image(systemName: "arrowtriangle.down.fill")
+        }
+        
+        public enum CountrySelector {
+            public static var font = AppConfig.font
+            public static var cornerRadius: CGFloat = 10
+            public static var textColor = AppConfig.defaultTextColor
+            public static var promptColor = AppConfig.promptColor
+            public static var background = Color.white
+            public static var showTitle = true
+            public static var showFlag = true
+            public static var showCode = false
+            public static var showPrompt = true
+            public static var titleAlign: Alignment = .leading
+            public static var arrowImage: Image = Image(systemName: "arrow.down")
+            public static var checkImage: Image = Image(systemName: "checkmark")
+        }
+        
     }
     
 }
