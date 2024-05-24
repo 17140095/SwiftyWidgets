@@ -289,6 +289,9 @@ extension View {
             }
         }
     }
+    func customBackButton(title: String = "", onPress: (()-> Void)? = nil, showBtn: Bool = true) -> some View {
+        modifier(CustomBackButton(title: title,onPress: onPress, showBtn: showBtn))
+    }
     
     @ViewBuilder
     public func swiftyAlert(
