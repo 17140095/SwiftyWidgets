@@ -117,16 +117,14 @@ extension View {
             modifier: KeyboardHeightModifier()
         )
     }
-    @ViewBuilder
-    public func border(props: BorderProps?) -> some View {
+    @ViewBuilder public func border(props: BorderProps?) -> some View {
         if let props = props {
             self.border(props.color, width: props.width)
         } else {
             self
         }
     }
-    @ViewBuilder
-    public func border(props: BorderProps, isFocus: Bool, isError: Bool, if condition: Bool) -> some View {
+    @ViewBuilder public func border(props: BorderProps, isFocus: Bool, isError: Bool, if condition: Bool) -> some View {
         if condition {
             self.border(isError ? .red : props.color, width: isFocus ? props.getFocusWidth() : props.width )
         } else {
@@ -135,32 +133,21 @@ extension View {
     }
     
     
-    @ViewBuilder
-    public func textFieldStyle<S>(style: S, if condition: Bool) -> some View where S : TextFieldStyle {
+    @ViewBuilder public func textFieldStyle<S>(style: S, if condition: Bool) -> some View where S : TextFieldStyle {
         if condition {
             self.textFieldStyle(style)
         } else {
             self
         }
     }
-    @ViewBuilder
-    public func padding(_ insets: EdgeInsets, if condition: Bool) -> some View {
+    @ViewBuilder public func padding(_ insets: EdgeInsets, if condition: Bool) -> some View {
         if condition {
             self.padding(insets)
         } else {
             self
         }
     }
-    @ViewBuilder
-    public func padding(_ edges: Edge.Set = .all, _ length: CGFloat? = nil, if condition: Bool) -> some View {
-        if condition {
-            self.padding(edges, length)
-        } else {
-            self
-        }
-    }
-    @ViewBuilder
-    public func padding(if condition: Bool,  edges: Edge.Set, _ length: CGFloat? = nil) -> some View {
+    @ViewBuilder public func padding(_ edges: Edge.Set = .all, _ length: CGFloat? = nil, if condition: Bool) -> some View {
         if condition {
             self.padding(edges, length)
         } else {
@@ -168,8 +155,7 @@ extension View {
         }
     }
     
-    @ViewBuilder
-    public func shadow(props: ShadowProps?) -> some View {
+    @ViewBuilder public func shadow(props: ShadowProps?) -> some View {
         if let props = props {
             self.shadow(color: props.color, radius: props.radius, x: props.x, y: props.y)
         } else {
@@ -178,18 +164,11 @@ extension View {
     }
     
     
-    @ViewBuilder
-    public func background<S>(_ style: Color, if condition: Bool = true) -> some View where S : ShapeStyle {
+    @ViewBuilder public func background<S>(_ style: Color, if condition: Bool = true) -> some View where S : ShapeStyle {
         self.background(condition ? style : .clear )
     }
     
-    @ViewBuilder
-    public func focused(_ condition: Binding<Bool>) -> some View {
-        
-    }
-    
-    @ViewBuilder
-    public func fgStyle(_ style: Color) -> some View{
+    @ViewBuilder public func fgStyle(_ style: Color) -> some View{
         if #available(iOS 15.0, *) {
             self.foregroundStyle(style)
         } else {
@@ -197,8 +176,7 @@ extension View {
         }
     }
     
-    @ViewBuilder
-    public func tintColor(_ color: Color) -> some View {
+    @ViewBuilder public func tintColor(_ color: Color) -> some View {
         if #available(iOS 16.0, *) {
             self.tint(color)
         } else {
@@ -210,8 +188,7 @@ extension View {
         }
     }
     
-    @ViewBuilder
-    public func tintColor(_ color: Color, if condition: Bool) -> some View {
+    @ViewBuilder public func tintColor(_ color: Color, if condition: Bool) -> some View {
         if condition {
             if #available(iOS 16.0, *) {
                 self.tint(color)
@@ -228,8 +205,7 @@ extension View {
         
     }
     
-    @ViewBuilder
-    public func buttonStyle<S>(_ style: S, if condition: Bool) -> some View where S : ButtonStyle {
+    @ViewBuilder public func buttonStyle<S>(_ style: S, if condition: Bool) -> some View where S : ButtonStyle {
         if condition {
             self.buttonStyle(style)
         } else {
@@ -237,8 +213,7 @@ extension View {
         }
     }
     
-    @ViewBuilder
-    public func onChangeInput(of value: String, delegate inputDelegate: SwiftyInputProtocol?, perform action: @escaping (_ newValue: String) -> Void) -> some View {
+    @ViewBuilder public func onChangeInput(of value: String, delegate inputDelegate: SwiftyInputProtocol?, perform action: @escaping (_ newValue: String) -> Void) -> some View {
         
         if #available(iOS 17.0, *) {
             self.onChange(of: value) { oldValue, newValue in
@@ -253,8 +228,7 @@ extension View {
         }
     }
     
-    @ViewBuilder
-    public func onChangeFocus(of value: Bool, delegate inputDelegate: SwiftyInputProtocol?, perform action: @escaping (_ newValue: Bool) -> Void) -> some View {
+    @ViewBuilder public func onChangeFocus(of value: Bool, delegate inputDelegate: SwiftyInputProtocol?, perform action: @escaping (_ newValue: Bool) -> Void) -> some View {
         
         if #available(iOS 17.0, *) {
             self.onChange(of: value) { oldFocusValue, focusValue in
@@ -269,8 +243,7 @@ extension View {
         }
     }
     
-    @ViewBuilder
-    public func overlay<V>(alignment: Alignment = .center, if condition: Bool, @ViewBuilder content: () -> V) -> some View where V : View {
+    @ViewBuilder public func overlay<V>(alignment: Alignment = .center, if condition: Bool, @ViewBuilder content: () -> V) -> some View where V : View {
         if condition {
             self.overlay(alignment: alignment, content: content)
         } else {
@@ -292,9 +265,21 @@ extension View {
     func customBackButton(title: String = "", onPress: (()-> Void)? = nil, showBtn: Bool = true) -> some View {
         modifier(CustomBackButton(title: title,onPress: onPress, showBtn: showBtn))
     }
-    
-    @ViewBuilder
-    public func swiftyAlert(
+    @ViewBuilder func border<S>(_ content: S, width: CGFloat = 1, if condition: Bool) -> some View where S : ShapeStyle {
+        if condition {
+            self.border(content, width: width)
+        } else {
+            self
+        }
+    }
+    @ViewBuilder func background<S>(_ style: S, ignoresSafeAreaEdges edges: Edge.Set = .all, if condition: Bool) -> some View where S : ShapeStyle {
+        if condition {
+            self.background(style, ignoresSafeAreaEdges: edges)
+        } else {
+            self
+        }
+    }
+    @ViewBuilder public func swiftyAlert(
         isPresented: Binding<Bool>,
         title: String,
         message: String,

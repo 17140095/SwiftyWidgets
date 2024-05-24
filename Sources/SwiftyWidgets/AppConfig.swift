@@ -74,4 +74,24 @@ public enum AppConfig {
         public static var messageColor = AppConfig.defaultTextColor
     }
     
+    public enum Selectors {
+        public enum ImageSelector {
+            public static var color = AppConfig.primaryColor
+            public static var width: CGFloat = 3
+        }
+        
+        public enum SegmentedSelector {
+            public static var font: Font = AppConfig.font
+            public static var cRadius: CGFloat = 10.0
+            public static var primaryColor: Color = AppConfig.primaryColor
+            public static var secondaryColor: Color = AppConfig.secondaryColor
+            public static var showBorder: Bool = false
+            public static var roundStyle: PickerRoundStyle = .NO_ROUND
+            public static var spacing: CGFloat = 1
+            public static var direction: Axis.Set = .horizontal
+            public static var padding: EdgeInsets = EdgeInsets(top: 10, leading: 0, bottom: 10, trailing: 0)
+            public static var borderWidth: CGFloat = 2
+        }
+    }
+    
 }
