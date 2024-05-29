@@ -1,5 +1,5 @@
 //
-//  SwiftUIView.swift
+//  SegmentedSelector.swift
 //  
 //
 //  Created by Ali Raza on 24/05/2024.

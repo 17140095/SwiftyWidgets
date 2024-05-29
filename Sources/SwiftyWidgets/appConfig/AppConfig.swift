@@ -21,6 +21,13 @@ public enum AppConfig {
     public static var navigationTitleColor = AppConfig.primaryColor
     public static var navigationBackButtonView: (()-> AnyView)? = nil
     
+    public enum Cache {
+        public enum PhoneSelector {
+            public static var country = Countries.allCountry.first
+            public static var phoneNo = ""
+        }
+    }
+    
     public enum Buttons {
         public static var font = AppConfig.font
         public static var filledBgColor = AppConfig.primaryColor
@@ -112,8 +119,25 @@ public enum AppConfig {
             public static var showFlag = true
             public static var showCode = false
             public static var showPrompt = true
+            public static var showBorder = true
+            public static var border = AppConfig.primaryColor
+            public static var borderWidth: CGFloat = 1.0
             public static var titleAlign: Alignment = .leading
-            public static var arrowImage: Image = Image(systemName: "arrow.down")
+            public static var arrowImage: Image = Image(systemName: "arrowtriangle.down.fill")
+            public static var checkImage: Image = Image(systemName: "checkmark")
+        }
+        
+        public enum PhoneSelector {
+            public static var font = AppConfig.font
+            public static var background = AppConfig.secondaryColor
+            public static var foreground = AppConfig.defaultTextColor
+            public static var cornerRadius: CGFloat = 10
+            public static var textColor = AppConfig.defaultTextColor
+            public static var promptColor = AppConfig.promptColor
+            public static var showBorder = true
+            public static var border = AppConfig.primaryColor
+            public static var borderWidth: CGFloat = 1.0
+            public static var arrowImage: Image = Image(systemName: "arrowtriangle.down.fill")
             public static var checkImage: Image = Image(systemName: "checkmark")
         }
         

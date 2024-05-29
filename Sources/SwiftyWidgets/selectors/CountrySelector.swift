@@ -1,5 +1,5 @@
 //
-//  SwiftUIView.swift
+//  CountrySelector.swift
 //  
 //
 //  Created by Ali Raza on 24/05/2024.
@@ -10,6 +10,7 @@ import SwiftUI
 @available(iOS 15.0, *)
 public struct CountrySelector: View {
     var label: String = ""
+    var prompt: String = "Select Country"
     @Binding var select: String
     var props = CountrySelectorProps()
     
@@ -44,7 +45,7 @@ public struct CountrySelector: View {
                     if props.titleAlign == .center || props.titleAlign == .trailing {
                         Spacer()
                     }
-                    Text("Select Country")
+                    Text(prompt)
                         .font(props.font)
                         .foregroundStyle(props.promptColor)
                     
@@ -63,12 +64,16 @@ public struct CountrySelector: View {
                         Spacer()
                     }
                 }
-                Image("Arrow_Down")
+                props.arrowImage
             }
             .padding()
             .frame(minWidth: 100)
             .background(props.background)
             .clipShape(RoundedRectangle(cornerRadius: props.cornerRadius))
+            .overlay(if: props.showBorder) {
+                RoundedRectangle(cornerRadius: props.cornerRadius)
+                    .stroke(props.border, lineWidth: props.borderWidth)
+            }
             .onTapGesture {
                 presentSheet = true
                 keyIsFocused = false
@@ -120,6 +125,9 @@ public struct CountrySelectorProps {
     public var showFlag: Bool
     public var showCode: Bool
     public var showPrompt: Bool
+    public var showBorder: Bool
+    public var border: Color
+    public var borderWidth: CGFloat
     public var titleAlign: Alignment
     public var arrowImage: Image
     public var checkImage: Image
@@ -134,6 +142,9 @@ public struct CountrySelectorProps {
         showFlag: Bool = AppConfig.Selectors.CountrySelector.showFlag,
         showCode: Bool = AppConfig.Selectors.CountrySelector.showCode,
         showPrompt: Bool = AppConfig.Selectors.CountrySelector.showPrompt,
+        showBorder: Bool = AppConfig.Selectors.CountrySelector.showBorder,
+        borderWidth: CGFloat = AppConfig.Selectors.CountrySelector.borderWidth,
+        border: Color = AppConfig.Selectors.CountrySelector.border,
         titleAlign: Alignment = AppConfig.Selectors.CountrySelector.titleAlign,
         arrowImage: Image = AppConfig.Selectors.CountrySelector.arrowImage,
         checkImage: Image = AppConfig.Selectors.CountrySelector.checkImage
@@ -150,6 +161,9 @@ public struct CountrySelectorProps {
         self.titleAlign = titleAlign
         self.arrowImage = arrowImage
         self.checkImage = checkImage
+        self.showBorder = showBorder
+        self.border = border
+        self.borderWidth = borderWidth
     }
     
 }

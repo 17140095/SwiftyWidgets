@@ -42,7 +42,6 @@ public struct SwiftyInput: View {
                             GeometryReader(content: { geometry in
                                 Color.clear.onAppear {
                                     leftViewWidth = geometry.size.width
-                                    print("leftViewSize: \(geometry.size)")
                                 }
                             })
                         }

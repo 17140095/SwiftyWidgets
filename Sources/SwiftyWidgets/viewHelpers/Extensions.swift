@@ -19,6 +19,25 @@ extension String {
     public var isBlank: Bool {
         self.trim.isEmpty
     }
+    
+    public func formatNumberOn(mask: String = "(###) ###-####", replaceChar: Character = "#") -> String {
+        let cleanNumber = components(separatedBy: CharacterSet.decimalDigits.inverted).joined()
+        
+        var result = ""
+        var startIndex = cleanNumber.startIndex
+        let endIndex = cleanNumber.endIndex
+        
+        for char in mask where startIndex < endIndex {
+            if char == replaceChar {
+                result.append(cleanNumber[startIndex])
+                startIndex = cleanNumber.index(after: startIndex)
+            } else {
+                result.append(char)
+            }
+        }
+        
+        return result
+    }
 }
 extension Bundle {
     public func decode<T: Decodable>(_ file: String) -> T {
@@ -131,13 +150,33 @@ extension Color {
 
 @available(iOS 15.0, *)
 extension View {
-    
+    public func hideKeyboard() {
+        let resign = #selector(UIResponder.resignFirstResponder)
+        UIApplication.shared.sendAction(resign, to: nil, from: nil, for: nil)
+    }
     public func keyboardAwarePadding() -> some View {
         ModifiedContent(
             content: self,
             modifier: KeyboardHeightModifier()
         )
     }
+    public func disableWithOpacity(_ condition: Bool) -> some View {
+        self
+            .disabled(condition)
+            .opacity(condition ? 0.6 : 1)
+    }
+    public func placeholder<Content: View>(
+        when shouldShow: Bool,
+        alignment: Alignment = .leading,
+        @ViewBuilder placeholder: () -> Content
+    ) -> some View {
+        
+        ZStack(alignment: alignment) {
+            placeholder().opacity(shouldShow ? 1 : 0)
+            self
+        }
+    }
+    
     @ViewBuilder public func border(props: BorderProps?) -> some View {
         if let props = props {
             self.border(props.color, width: props.width)
