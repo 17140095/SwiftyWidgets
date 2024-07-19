@@ -8,13 +8,33 @@
 import SwiftUI
 
 @available(iOS 15.0, *)
-public struct PhoneSelector: View {
-    var label: String = ""
-    var prompt: String? = nil
+public struct PhoneSelector: View, BaseProps {
+    public enum Cache {
+        public static var country = Countries.allCountry.first
+        public static var phoneNo = ""
+    }
+    
+    public var primaryColor: Color = AppConfig.Selectors.PhoneSelector.primaryColor
+    public var secondaryColor: Color = AppConfig.Selectors.PhoneSelector.secondaryColor
+    public var border: BorderProps? = AppConfig.Selectors.PhoneSelector.border
+    public var shadow: ShadowProps? = AppConfig.Selectors.PhoneSelector.shadow
+    public var cornerRadius: CGFloat = AppConfig.Selectors.PhoneSelector.cornerRadius
+    public var padding: EdgeInsets = AppConfig.Selectors.PhoneSelector.padding
+    public var font: Font = AppConfig.Selectors.PhoneSelector.font
+    
+    public var style: SwiftyInputStyle = AppConfig.Selectors.PhoneSelector.style
+    public var promptColor: Color = AppConfig.Selectors.PhoneSelector.promptColor
+    public var textColor: Color = AppConfig.Selectors.PhoneSelector.textColor
+    public var showBorder: Bool = AppConfig.Selectors.PhoneSelector.showBorder
+    public var arrowImage: Image = AppConfig.Selectors.PhoneSelector.arrowImage
+    public var checkImage: Image = AppConfig.Selectors.PhoneSelector.checkImage
+    public var background: Color = AppConfig.Selectors.PhoneSelector.background
+    
+    var label: String
+    var prompt: String?
     var shouldCache: Bool? = nil
     var readFromCache: Bool? = nil
     
-    var props: PhoneSelectorProps
     
     @Binding var phoneNo: String
     @State private var selectedCountry: Country?
@@ -22,13 +42,9 @@ public struct PhoneSelector: View {
     @State private var phoneWithoutCode: String =  ""
     @FocusState private var keyIsFocused: Bool
     
-    public init(label: String = "", prompt: String? = nil, readFromCache: Bool? = nil, shouldCache: Bool? = nil ,phoneNo: Binding<String>, props: PhoneSelectorProps = PhoneSelectorProps()) {
-        
-        self.shouldCache = shouldCache
-        self.readFromCache = readFromCache
+    public init(label: String = "", prompt: String? = nil ,phoneNo: Binding<String>) {
         self.label = label
         self.prompt = prompt
-        self.props = props
         self._phoneNo = phoneNo
         self._selectedCountry = State(initialValue: Countries.allCountry.first)
         
@@ -37,8 +53,8 @@ public struct PhoneSelector: View {
         VStack (alignment: .leading){
             if label.trim.isNotEmpty {
                 Text(label)
-                    .font(props.font)
-                    .foregroundStyle(props.foreground)
+                    .font(font)
+                    .foregroundStyle(primaryColor)
             }
             HStack() {
                 Button {
@@ -46,16 +62,15 @@ public struct PhoneSelector: View {
                     keyIsFocused = false
                 } label: {
                     Text(selectedCountry?.flag ?? "")
-                    props.arrowImage
+                    arrowImage
                 }
-                .font(props.font)
-                .foregroundStyle(props.foreground)
+                .foregroundStyle(primaryColor)
                 Text(selectedCountry?.dial_code ?? "")
-                    .font(AppConfig.Selectors.PhoneSelector.font)
+                    .foregroundStyle(primaryColor)
                 TextField("", text: $phoneWithoutCode)
                     .placeholder(when: phoneWithoutCode.isEmpty) {
                         Text(getPlaceholder())
-                            .foregroundColor(props.promptColor)
+                            .foregroundColor(promptColor)
                     }
                     .focused($keyIsFocused)
                     .keyboardType(.numberPad)
@@ -65,37 +80,31 @@ public struct PhoneSelector: View {
                         phoneNo = (selectedCountry?.dial_code ?? "").appending(phoneWithoutCode)
                         cacheSelection()
                     })
-                    .font(AppConfig.Selectors.PhoneSelector.font)
-                    .foregroundColor(props.foreground)
-                    .tint(props.foreground)
+                    .foregroundColor(primaryColor)
+                    .tint(primaryColor)
             }
-            .padding()
-            .background(props.background)
-            .clipShape(RoundedRectangle(cornerRadius: props.cornerRadius))
-            .animation(.easeInOut(duration: 0.6), value: keyIsFocused)
-            .overlay(if: props.showBorder) {
-                RoundedRectangle(cornerRadius: props.cornerRadius)
-                    .stroke(props.border, lineWidth: props.borderWidth)
-            }
+            .font(font)
+            .padding(padding, if: style == .BORDERD)
+            .padding(.top, padding.top, if: style == .UNDERLINED)
+            .padding(.bottom, padding.bottom, if: style == .UNDERLINED)
             .onTapGesture {
                 hideKeyboard()
             }
+            .animation(.easeInOut(duration: 0.6), value: keyIsFocused)
             .sheet(isPresented: $presentSheet) {
                 NavigationView {
                     List(Countries.allCountry) { country in
                         HStack {
                             Text(country.flag)
                             Text(country.name)
-                                .font(props.font)
-                                .foregroundStyle(props.textColor)
+                                .foregroundStyle(textColor)
                             if country == selectedCountry {
-                                props.checkImage
-                                    .font(props.font)
+                                checkImage
+                                    .foregroundStyle(primaryColor)
                             }
                             Spacer()
                             Text(country.dial_code)
-                                .font(props.font)
-                                .foregroundStyle(props.foreground)
+                                .foregroundStyle(textColor)
                         }
                         .onTapGesture {
                             selectedCountry = country
@@ -103,10 +112,23 @@ public struct PhoneSelector: View {
                         }
                     }
                     .listStyle(.plain)
+                    .font(font)
                 }
                 .padding(.vertical, 20)
             }
             .disableWithOpacity(readFromCache ?? false)
+            
+            if style == .UNDERLINED {
+                Rectangle()
+                    .fill(primaryColor)
+                    .frame(height: keyIsFocused ? 2 : 1)
+            }
+        }
+        .background(background)
+        .clipShape(RoundedRectangle(cornerRadius: cornerRadius), if: style == .BORDERD)
+        .overlay(if: showBorder && style == .BORDERD) {
+            RoundedRectangle(cornerRadius: cornerRadius)
+                .stroke(border?.color ?? .clear, lineWidth: border?.width ?? 0)
         }
         .onAppear{
             if readFromCache ?? false {
@@ -119,67 +141,109 @@ public struct PhoneSelector: View {
         if let prompt {
             return prompt
         } else {
-            return selectedCountry?.pattern.replacingOccurrences(of: "#", with: "0") ?? "123456789"
+            return selectedCountry?.pattern.replacingOccurrences(of: "#", with: "0") ?? ""
         }
     }
     
     private func cacheSelection() {
         if shouldCache ?? false {
-            AppConfig.Cache.PhoneSelector.country = selectedCountry
-            AppConfig.Cache.PhoneSelector.phoneNo = phoneWithoutCode
+            Cache.country = selectedCountry
+            Cache.phoneNo = phoneWithoutCode
         }
     }
     
     private func readCache() {
         if readFromCache ?? false {
-            selectedCountry = AppConfig.Cache.PhoneSelector.country
-            phoneWithoutCode = AppConfig.Cache.PhoneSelector.phoneNo
+            selectedCountry = Cache.country
+            phoneWithoutCode = Cache.phoneNo
         }
     }
     
 }// PhoneSelector
 
-
 @available(iOS 15.0, *)
-public struct PhoneSelectorProps {
-    public var font: Font
-    public var foreground: Color
-    public var background: Color
-    public var promptColor: Color
-    public var textColor: Color
-    public var cornerRadius = 10.0
-    public var showBorder: Bool
-    public var border: Color
-    public var borderWidth: CGFloat
-    public var arrowImage: Image
-    public var checkImage: Image
-    
-    public init(
-        font: Font = AppConfig.Selectors.PhoneSelector.font,
-        foreground: Color = AppConfig.Selectors.PhoneSelector.foreground,
-        background: Color = AppConfig.Selectors.PhoneSelector.background,
-        promptColor: Color = AppConfig.Selectors.PhoneSelector.promptColor,
-        textColor: Color = AppConfig.Selectors.PhoneSelector.textColor,
-        cornerRadius: Double = AppConfig.Selectors.PhoneSelector.cornerRadius,
-        showBorder: Bool = AppConfig.Selectors.PhoneSelector.showBorder,
-        border: Color = AppConfig.Selectors.PhoneSelector.border,
-        borderWidth: CGFloat = AppConfig.Selectors.PhoneSelector.borderWidth,
-        arrowImage: Image = AppConfig.Selectors.PhoneSelector.arrowImage, 
-        checkImage: Image = AppConfig.Selectors.PhoneSelector.checkImage
-    ) {
-        self.font = font
-        self.foreground = foreground
-        self.background = background
-        self.promptColor = promptColor
-        self.textColor = textColor
-        self.cornerRadius = cornerRadius
-        self.showBorder = showBorder
-        self.border = border
-        self.borderWidth = borderWidth
-        self.arrowImage = arrowImage
-        self.checkImage = checkImage
+extension PhoneSelector {
+    //setter
+    public func setPrimaryColor(_ color: Color) -> Self {
+        var copy = self
+        copy.primaryColor = color
+        return copy
     }
-    
+    public func setSecondaryColor(_ color: Color) -> Self {
+        var copy = self
+        copy.secondaryColor = color
+        return copy
+    }
+    public func setBorder(_ border: BorderProps) -> Self {
+        var copy = self
+        copy.border = border
+        return copy
+    }
+    public func setShadow(_ shadow: ShadowProps) -> Self {
+        var copy = self
+        copy.shadow = shadow
+        return copy
+    }
+    public func setCornerRadius(_ radius: CGFloat) -> Self {
+        var copy = self
+        copy.cornerRadius = radius
+        return copy
+    }
+    public func setPadding(_ padding: EdgeInsets) -> Self {
+        var copy = self
+        copy.padding = padding
+        return copy
+    }
+    public func setFont(_ font: Font) -> Self {
+        var copy = self
+        copy.font = font
+        return copy
+    }
+    public func setPromptColor(_ color: Color) -> Self {
+        var copy = self
+        copy.promptColor = color
+        return copy
+    }
+    public func setTextColor(_ color: Color) -> Self {
+        var copy = self
+        copy.textColor = color
+        return copy
+    }
+    public func setShowBorder(_ show: Bool) -> Self {
+        var copy = self
+        copy.showBorder = show
+        return copy
+    }
+    public func setArrowImage(_ image: Image) -> Self {
+        var copy = self
+        copy.arrowImage = image
+        return copy
+    }
+    public func setCheckImage(_ image: Image) -> Self {
+        var copy = self
+        copy.checkImage = image
+        return copy
+    }
+    public func setBackground(_ color: Color) -> Self {
+        var copy = self
+        copy.background = color
+        return copy
+    }
+    public func setShouldCache(_ shouldCache: Bool = true) -> Self {
+        var copy = self
+        copy.shouldCache = shouldCache
+        return copy
+    }
+    public func setReadFromCache(_ readFromCache: Bool = true) -> Self {
+        var copy = self
+        copy.readFromCache = readFromCache
+        return copy
+    }
+    public func setStyle(_ style: SwiftyInputStyle) -> Self {
+        var copy = self
+        copy.style = style
+        return copy
+    }
 }
 
 
@@ -191,10 +255,12 @@ struct TestPhoneSelector: View {
     var body: some View {
         VStack {
             PhoneSelector(label: "",phoneNo: $text)
-                .padding(.top, 50)
+//                .setPrimaryColor(.red)
+                .setPadding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
             CountrySelector(select: $text)
             Spacer()
         }
+//        .padding()
     }
 }
 

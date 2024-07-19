@@ -1,6 +1,6 @@
 //
 //  CountrySelector.swift
-//  
+//
 //
 //  Created by Ali Raza on 24/05/2024.
 //
@@ -8,72 +8,86 @@
 import SwiftUI
 
 @available(iOS 15.0, *)
-public struct CountrySelector: View {
+public struct CountrySelector: View, BaseProps {
+    
+    public var primaryColor: Color = AppConfig.Selectors.CountrySelector.primaryColor
+    public var secondaryColor: Color = AppConfig.secondaryColor
+    public var border: BorderProps? = AppConfig.Buttons.borderProps
+    public var shadow: ShadowProps? = nil
+    public var cornerRadius: CGFloat = AppConfig.Buttons.radius
+    public var padding: EdgeInsets = AppConfig.Buttons.padding
+    public var font: Font = AppConfig.Buttons.font
+    
+    public var textColor: Color = AppConfig.Selectors.CountrySelector.textColor
+    public var promptColor: Color = AppConfig.Selectors.CountrySelector.promptColor
+    public var background: Color = AppConfig.Selectors.CountrySelector.background
+    public var showTitle: Bool = AppConfig.Selectors.CountrySelector.showTitle
+    public var showFlag: Bool = AppConfig.Selectors.CountrySelector.showFlag
+    public var showCode: Bool = AppConfig.Selectors.CountrySelector.showCode
+    public var showPrompt: Bool = AppConfig.Selectors.CountrySelector.showPrompt
+    public var showBorder: Bool = AppConfig.Selectors.CountrySelector.showBorder
+    public var titleAlign: Alignment = AppConfig.Selectors.CountrySelector.titleAlign
+    public var arrowImage: Image = AppConfig.Selectors.CountrySelector.arrowImage
+    public var checkImage: Image = AppConfig.Selectors.CountrySelector.checkImage
+    public var style: SwiftyInputStyle = AppConfig.Selectors.CountrySelector.style
+    
     var label: String = ""
     var prompt: String = "Select Country"
     @Binding var select: String
-    var props = CountrySelectorProps()
     
     @State private var presentSheet = false
     @State private var selectedCountry = Countries.allCountry.first
     @FocusState private var keyIsFocused: Bool
     
-    public init(label: String = "", select: Binding<String>, props: CountrySelectorProps = CountrySelectorProps()) {
+    public init(label: String = "", select: Binding<String>) {
         self.label = label
         self._select = select
-        self.props = props
         self.presentSheet = presentSheet
         self.selectedCountry = selectedCountry
         self.keyIsFocused = keyIsFocused
     }
     
     public var body: some View {
-        VStack(alignment: .leading) {
+        VStack(alignment: .leading, spacing: 0) {
             if label.trim.isNotEmpty {
                 Text(label)
-                    .font(props.font)
-                    .foregroundStyle(props.textColor)
+                    .foregroundStyle(primaryColor)
+                    .padding(.bottom, 8)
             }
             HStack {
-                if props.showFlag {
+                if showFlag {
                     Text(getFlagAndCode())
-                        .font(props.font)
                         .frame(minWidth: 20)
                     
                 }
-                if props.showPrompt && selectedCountry == nil {
-                    if props.titleAlign == .center || props.titleAlign == .trailing {
+                if showPrompt && selectedCountry == nil {
+                    if titleAlign == .center || titleAlign == .trailing {
                         Spacer()
                     }
                     Text(prompt)
-                        .font(props.font)
-                        .foregroundStyle(props.promptColor)
+                        .foregroundStyle(promptColor)
                     
-                    if props.titleAlign == .center || props.titleAlign == .leading {
+                    if titleAlign == .center || titleAlign == .leading {
                         Spacer()
                     }
-                } else if props.showTitle {
-                    if props.titleAlign == .center || props.titleAlign == .trailing {
+                } else if showTitle {
+                    if titleAlign == .center || titleAlign == .trailing {
                         Spacer()
                     }
                     Text(selectedCountry?.name ?? "")
-                        .font(props.font)
-                        .foregroundStyle(props.textColor)
+                        .foregroundStyle(primaryColor)
                     
-                    if props.titleAlign == .center || props.titleAlign == .leading {
+                    if titleAlign == .center || titleAlign == .leading {
                         Spacer()
                     }
                 }
-                props.arrowImage
+                arrowImage
+                    .foregroundStyle(primaryColor)
             }
-            .padding()
+            .padding(padding, if: style == .BORDERD)
+            .padding(.top, padding.top, if: style == .UNDERLINED)
+            .padding(.bottom, padding.bottom, if: style == .UNDERLINED)
             .frame(minWidth: 100)
-            .background(props.background)
-            .clipShape(RoundedRectangle(cornerRadius: props.cornerRadius))
-            .overlay(if: props.showBorder) {
-                RoundedRectangle(cornerRadius: props.cornerRadius)
-                    .stroke(props.border, lineWidth: props.borderWidth)
-            }
             .onTapGesture {
                 presentSheet = true
                 keyIsFocused = false
@@ -84,15 +98,14 @@ public struct CountrySelector: View {
                     List(Countries.allCountry) { country in
                         HStack {
                             Text(country.flag + "  \(country.code)")
-                                .font(props.font)
+                                .font(font)
                             if country == selectedCountry {
-                                props.checkImage
-                                    .font(props.font)
+                                checkImage
+                                    .foregroundStyle(primaryColor)
                             }
                             Spacer()
                             Text(country.name)
-                                .font(props.font)
-                                .foregroundStyle(props.textColor)
+                                .foregroundStyle(textColor)
                         }
                         .onTapGesture {
                             selectedCountry = country
@@ -103,67 +116,81 @@ public struct CountrySelector: View {
                     .listStyle(.plain)
                 }
                 .padding(.vertical, 20)
+            }
+            
+            if style == .UNDERLINED {
+                Rectangle()
+                    .fill(primaryColor)
+                    .frame(height: keyIsFocused ? 2 : 1)
+            }
         }
+        .background(background)
+        .font(font)
+        .clipShape(RoundedRectangle(cornerRadius: cornerRadius), if: style == .BORDERD)
+        .overlay(if: showBorder && style == .BORDERD) {
+            RoundedRectangle(cornerRadius: cornerRadius)
+                .stroke(border?.color ?? .clear, lineWidth: border?.width ?? 0)
         }
         
     }
     
     private func getFlagAndCode() -> String {
-        let code = props.showCode ? "  \(selectedCountry?.code ?? "")" : ""
+        let code = showCode ? "  \(selectedCountry?.code ?? "")" : ""
         return "\(selectedCountry?.flag ?? "")\(code)"
     }
+    
 }
 
-@available(iOS 15.0.0, *)
-public struct CountrySelectorProps {
-    public var font: Font
-    public var textColor: Color
-    public var promptColor: Color
-    public var background: Color
-    public var cornerRadius: CGFloat
-    public var showTitle: Bool
-    public var showFlag: Bool
-    public var showCode: Bool
-    public var showPrompt: Bool
-    public var showBorder: Bool
-    public var border: Color
-    public var borderWidth: CGFloat
-    public var titleAlign: Alignment
-    public var arrowImage: Image
-    public var checkImage: Image
+
+
+@available(iOS 15.0, *)
+extension CountrySelector: BaseProps {
     
-    public init(
-        font: Font = AppConfig.Selectors.CountrySelector.font,
-        textColor: Color = AppConfig.Selectors.CountrySelector.textColor,
-        promptColor: Color = AppConfig.Selectors.CountrySelector.promptColor,
-        background: Color = AppConfig.Selectors.CountrySelector.background,
-        cornerRadius: CGFloat = AppConfig.Selectors.CountrySelector.cornerRadius,
-        showTitle: Bool = AppConfig.Selectors.CountrySelector.showTitle,
-        showFlag: Bool = AppConfig.Selectors.CountrySelector.showFlag,
-        showCode: Bool = AppConfig.Selectors.CountrySelector.showCode,
-        showPrompt: Bool = AppConfig.Selectors.CountrySelector.showPrompt,
-        showBorder: Bool = AppConfig.Selectors.CountrySelector.showBorder,
-        borderWidth: CGFloat = AppConfig.Selectors.CountrySelector.borderWidth,
-        border: Color = AppConfig.Selectors.CountrySelector.border,
-        titleAlign: Alignment = AppConfig.Selectors.CountrySelector.titleAlign,
-        arrowImage: Image = AppConfig.Selectors.CountrySelector.arrowImage,
-        checkImage: Image = AppConfig.Selectors.CountrySelector.checkImage
-    ) {
-        self.font = font
-        self.textColor = textColor
-        self.promptColor = promptColor
-        self.background = background
-        self.cornerRadius = cornerRadius
-        self.showTitle = showTitle
-        self.showFlag = showFlag
-        self.showCode = showCode
-        self.showPrompt = showPrompt
-        self.titleAlign = titleAlign
-        self.arrowImage = arrowImage
-        self.checkImage = checkImage
-        self.showBorder = showBorder
-        self.border = border
-        self.borderWidth = borderWidth
+    public func setPrimaryColor(_ color: Color) -> CountrySelector {
+        var view = self
+        view.primaryColor = color
+        return view
+    }
+    
+    public func setSecondaryColor(_ color: Color) -> CountrySelector {
+        var view = self
+        view.secondaryColor = color
+        return view
+    }
+    
+    public func setBorder(_ border: BorderProps) -> CountrySelector {
+        var view = self
+        view.border = border
+        return view
+    }
+    
+    public func setShadow(_ shadow: ShadowProps) -> CountrySelector {
+        var view = self
+        view.shadow = shadow
+        return view
+    }
+    
+    public func setCornerRadius(_ radius: CGFloat) -> CountrySelector {
+        var view = self
+        view.cornerRadius = radius
+        return view
+    }
+    
+    public func setPadding(_ padding: EdgeInsets) -> CountrySelector {
+        var view = self
+        view.padding = padding
+        return view
+    }
+    
+    public func setFont(_ font: Font) -> CountrySelector {
+        var view = self
+        view.font = font
+        return view
+    }
+    public func setStyle(_ style: SwiftyInputStyle) -> CountrySelector {
+        var view = self
+        view.style = style
+        return view
     }
     
 }

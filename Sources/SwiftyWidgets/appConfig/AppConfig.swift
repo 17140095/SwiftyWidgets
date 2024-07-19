@@ -21,30 +21,24 @@ public enum AppConfig {
     public static var navigationTitleColor = AppConfig.primaryColor
     public static var navigationBackButtonView: (()-> AnyView)? = nil
     
-    public enum Cache {
-        public enum PhoneSelector {
-            public static var country = Countries.allCountry.first
-            public static var phoneNo = ""
-        }
-    }
-    
     public enum Buttons {
         public static var font = AppConfig.font
-        public static var filledBgColor = AppConfig.primaryColor
-        public static var filledFgColor = AppConfig.secondaryColor
-        public static var outlinedBgColor = AppConfig.secondaryColor
-        public static var outlinedFgColor = AppConfig.primaryColor
-        public static var style: SwiftyButtonStyle = .FILLED
-        public static var borderProps = BorderProps(color: AppConfig.Buttons.filledFgColor)
+        public static var bgColor = AppConfig.primaryColor
+        public static var fgColor = AppConfig.secondaryColor
+        public static var borderProps = BorderProps(color: AppConfig.Buttons.fgColor)
         public static var radius: CGFloat = 10.0
         public static var padding = EdgeInsets(top: 15, leading: 15, bottom: 15, trailing: 15)
-        public static var effect: SwiftyButtonEffect = .SCALER
+        
     }
     public enum Inputs {
+        public static var primaryColor = AppConfig.primaryColor
+        public static var secondaryColor = AppConfig.secondaryColor
         public static var font = AppConfig.font
-        public static var errorFont = AppConfig.Inputs.font
+        public static var cornerRadius: CGFloat = 0
+        public static var border = BorderProps()
+        public static var shadow = ShadowProps()
+        public static var padding = EdgeInsets(top: 5, leading: 10, bottom: 5, trailing: 10)
         public static var placeholderColor =  Color.gray
-        public static var cursorColor = AppConfig.primaryColor
         public static var leftViewSpace: CGFloat = 5.0
         public static var rightViewSpace: CGFloat = 5.0
         public static var leftIconColor = AppConfig.primaryColor
@@ -53,29 +47,30 @@ public enum AppConfig {
         public static var foregroundColor = AppConfig.primaryColor
         public static var errorMsgs = ErrorMsgs()
         public static var clearIcon: Image = Image(systemName: "multiply")
+        public static var showClearIcon: Bool = true
         public static var shouldFloat = false
         public static var style: SwiftyInputStyle = .UNDERLINED
-        public static var securedIcons = SwiftyInputSecureIcons()
-        public static var cornerRadius: CGFloat = 0
-        public static var hPaddingForBordered: CGFloat = 10
+        public static var securedIcons = FieldSecuredIcons()
     }
     
     public enum Alert {
         public static var background = AppConfig.backgroundColor
+        public static var headerBackground: Color = .clear
         public static var font = AppConfig.font
+        public static var actionsFont = AppConfig.font.bold()
         public static var iconFont = AppConfig.font
         public static var cornerRadius = 30.0
         public static var primaryColor: Color = AppConfig.primaryColor
         public static var secondaryColor: Color = AppConfig.secondaryColor
         public static var animationDuration: CGFloat = 0.5
         public static var animationStyle: AnyTransition = .slide
-        public static var actionsStyle: SwiftyButtonStyle = .FILLED
         public static var shouldActionsVertical: Bool = false
         public static var actionsSpacing: CGFloat = 0.0
         public static var actionsCornerRadius: CGFloat = 0.0
+        public static var applyActionsScalerEffect: Bool = false
         public static var padding: EdgeInsets = EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0)
-        public static var headerPadding: EdgeInsets = EdgeInsets(top: 20, leading: 10, bottom: 10, trailing: 10)
-        public static var titlePadding: EdgeInsets = EdgeInsets(top: 10, leading: 0, bottom: 0, trailing: 0)
+        public static var headerPadding: EdgeInsets = EdgeInsets(top: 20, leading: 10, bottom: 0, trailing: 10)
+        public static var titlePadding: EdgeInsets = EdgeInsets(top: 20, leading: 10, bottom: 20, trailing: 10)
         public static var msgPadding: EdgeInsets = EdgeInsets(top: 20, leading: 10, bottom: 20, trailing: 10)
         public static var actionsPadding: EdgeInsets = EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0)
         public static var headerImageSize: CGFloat = 50
@@ -103,15 +98,30 @@ public enum AppConfig {
         
         public enum InputSelector {
             public static var font = AppConfig.font
-            public static var cornerRadius: CGFloat = 10
             public static var primaryColor = AppConfig.primaryColor
-            public static var backgroundColor = Color.white
-            public static var image = Image(systemName: "arrowtriangle.down.fill")
+            public static var secondaryColor = AppConfig.secondaryColor
+            public static var border = BorderProps()
+            public static var shadow = ShadowProps()
+            public static var padding = EdgeInsets(top: 15, leading: 15, bottom: 15, trailing: 15)
+            public static var cornerRadius: CGFloat = 10
+            
+            public static var style: SwiftyInputStyle = .BORDERD
+            public static var textColor: Color = AppConfig.defaultTextColor
+            public static var background = Color.white
+            public static var arrowImage = Image(systemName: "arrowtriangle.down.fill")
+            public static var checkImage: Image = Image(systemName: "checkmark")
         }
         
         public enum CountrySelector {
             public static var font = AppConfig.font
+            public static var primaryColor = AppConfig.primaryColor
+            public static var secondaryColor = AppConfig.secondaryColor
+            public static var border = BorderProps()
+            public static var shadow = ShadowProps()
+            public static var padding = EdgeInsets(top: 5, leading: 10, bottom: 5, trailing: 10)
             public static var cornerRadius: CGFloat = 10
+            
+            public static var style: SwiftyInputStyle = .BORDERD
             public static var textColor = AppConfig.defaultTextColor
             public static var promptColor = AppConfig.promptColor
             public static var background = Color.white
@@ -120,8 +130,6 @@ public enum AppConfig {
             public static var showCode = false
             public static var showPrompt = true
             public static var showBorder = true
-            public static var border = AppConfig.primaryColor
-            public static var borderWidth: CGFloat = 1.0
             public static var titleAlign: Alignment = .leading
             public static var arrowImage: Image = Image(systemName: "arrowtriangle.down.fill")
             public static var checkImage: Image = Image(systemName: "checkmark")
@@ -129,16 +137,20 @@ public enum AppConfig {
         
         public enum PhoneSelector {
             public static var font = AppConfig.font
-            public static var background = AppConfig.secondaryColor
-            public static var foreground = AppConfig.defaultTextColor
+            public static var primaryColor = AppConfig.primaryColor
+            public static var secondaryColor = AppConfig.secondaryColor
+            public static var border = BorderProps()
+            public static var shadow = ShadowProps()
+            public static var padding = EdgeInsets(top: 15, leading: 15, bottom: 15, trailing: 15)
             public static var cornerRadius: CGFloat = 10
+            
+            public static var style: SwiftyInputStyle = .UNDERLINED
             public static var textColor = AppConfig.defaultTextColor
             public static var promptColor = AppConfig.promptColor
             public static var showBorder = true
-            public static var border = AppConfig.primaryColor
-            public static var borderWidth: CGFloat = 1.0
             public static var arrowImage: Image = Image(systemName: "arrowtriangle.down.fill")
             public static var checkImage: Image = Image(systemName: "checkmark")
+            public static var background = Color.white
         }
         
     }

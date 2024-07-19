@@ -6,16 +6,34 @@
 
 import SwiftUI
 
-@available(iOS 15.0, *)
-public struct SwiftyButton: View {
+public enum SwiftyButtonIconPos {
+    case LEFT, RIGHT, TOP, BOTTOM
+}
+
+@available(iOS 15.0.0, *)
+public struct SwiftyButton: View, BaseProps {
+    public var primaryColor: Color = AppConfig.primaryColor
+    public var secondaryColor: Color = AppConfig.secondaryColor
+    public var border: BorderProps? = AppConfig.Buttons.borderProps
+    public var shadow: ShadowProps? = nil
+    public var cornerRadius: CGFloat = AppConfig.Buttons.radius
+    public var padding: EdgeInsets = AppConfig.Buttons.padding
+    public var font: Font = AppConfig.Buttons.font
+    
+    public var icon: Image? = nil
+    public var iconPos: SwiftyButtonIconPos = .LEFT
+    public var iconSpacing: CGFloat = 0.0
+    public var showOnlyIcon: Bool = false
+    public var style: any LabelStyle
+    public var effect: (any ButtonStyle)? = nil
+    
     public let title: String
-    public var props: SwiftyButtonProps = SwiftyButtonProps()
     public let onPress: ()-> Void
     
-    public init(title: String, props: SwiftyButtonProps = SwiftyButtonProps(), onPress: @escaping () -> Void) {
+    public init(title: String, onPress: @escaping () -> Void) {
         self.title = title
-        self.props = props
         self.onPress = onPress
+        self.style = SwiftyButtonLabelStyle(iconPos: iconPos, showOnlyIcon: showOnlyIcon, iconSpacing: iconSpacing)
     }
     
     public var body: some View {
@@ -24,9 +42,8 @@ public struct SwiftyButton: View {
         }) {
             buildFilledOutlineView()
         }
-        .fgStyle(props.getFgColor())
-        
-        .buttonStyle(ScaleEffectStyle(props: self.props), if: props.effect == .SCALER)
+        .fgStyle(secondaryColor)
+        .buttonStyle(ScaleEffectStyle(font: font, fgColor: secondaryColor), if: effect != nil)
     }
     
     @ViewBuilder
@@ -35,248 +52,131 @@ public struct SwiftyButton: View {
         HStack(spacing: 0) {
             Spacer()
                 Label {
-                    Text(props.showOnlyIcon ? "" : title)
+                    Text(showOnlyIcon ? "" : title)
                 } icon: {
-                    props.icon
-                        .fgStyle(props.getFgColor())
-                        .scaledToFit()
+                    if let icon {
+                        icon
+                            .fgStyle(secondaryColor)
+                            .scaledToFit()
+                    }
                 }
-                .font(props.font)
-                .labelStyle(SwiftyButtonLabelStyle(props: props))
+                .font(font)
+                .labelStyle(SwiftyButtonLabelStyle(iconPos: iconPos, showOnlyIcon: showOnlyIcon, iconSpacing: iconSpacing))
             Spacer()
         }
-        .padding(props.padding)
-        .font(props.font)
-        .contentShape(RoundedRectangle(cornerRadius: props.cornerRadius))
-        .background(props.getBgColor())
-        .clipShape(RoundedRectangle(cornerRadius: props.cornerRadius))
-        .shadow(props: props.shadow)
+        .padding(padding)
+        .font(font)
+        .contentShape(RoundedRectangle(cornerRadius: cornerRadius))
+        .background(primaryColor)
+        .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
+        .shadow(props: shadow)
         .overlay {
-            RoundedRectangle(cornerRadius: props.cornerRadius)
-                .stroke(props.border.color, lineWidth: props.border.width)
-        }
-    }
-}
-
-#if DEBUG
-@available(iOS 15.0, *)
-#Preview {
-    ScrollView {
-        VStack(spacing: 20) {
-            SwiftyButton(title: "filled",props: SwiftyButtonProps(icon: Image(systemName: "person"), style: .FILLED)) {
-                print("Button pressed")
-            }
-            SwiftyButton(title: "filled",props: SwiftyButtonProps(icon: Image(systemName: "person"), iconPos: .RIGHT, style: .FILLED)) {
-                print("Button pressed")
-            }
-            SwiftyButton(title: "filled",props: SwiftyButtonProps(icon: Image(systemName: "person"), iconPos: .TOP, showOnlyIcon: true, shadow: ShadowProps(), style: .FILLED)) {
-                print("Button pressed")
-            }
-            .frame(width: 100)
-            
-            SwiftyButton(title: "filled",props: SwiftyButtonProps(icon: Image(systemName: "person"), iconPos: .BOTTOM,  style: .FILLED)) {
-                print("Button pressed")
-            }
-            SwiftyButton(title: "OUTLINE",props: SwiftyButtonProps(cornerRadius: 10.0, icon: Image(systemName: "person"), iconPos: .TOP, showOnlyIcon: true, style: .FILLED , effect: .DEFAULT)) {
-                print("Button pressed")
-            }
-            SwiftyButton(title: "OUTLINE",props: SwiftyButtonProps(cornerRadius: 10.0, icon: Image(systemName: "person"), iconPos: .TOP, showOnlyIcon: true, style: .OUTLINED, effect: .DEFAULT)) {
-                print("Button pressed")
-            }
-            .frame(width: 100)
-            
-            SwiftyButton(title: "OUTLINE",props: SwiftyButtonProps(icon: Image(systemName: "person"), iconPos: .LEFT, iconSpacing: 5, style: .OUTLINED)) {
-                print("Button pressed")
-            }
-            SwiftyButton(title: "OUTLINE",props: SwiftyButtonProps(icon: Image(systemName: "person"), iconPos: .RIGHT, iconSpacing: 5, style: .OUTLINED)) {
-                print("Button pressed")
-            }
-            SwiftyButton(title: "OUTLINE",props: SwiftyButtonProps(icon: Image(systemName: "person"), iconPos: .TOP, iconSpacing: 5, style: .OUTLINED)) {
-                print("Button pressed")
-            }
-            SwiftyButton(title: "OUTLINE",props: SwiftyButtonProps(icon: Image(systemName: "person"), iconPos: .BOTTOM, iconSpacing: 5, style: .OUTLINED)) {
-                print("Button pressed")
-            }
-            SwiftyButton(title: "OUTLINE",props: SwiftyButtonProps(cornerRadius: 10.0, icon: Image(systemName: "person"), iconPos: .TOP, style: .OUTLINED, effect: .DEFAULT)) {
-                print("Button pressed")
+            if let border {
+                RoundedRectangle(cornerRadius: cornerRadius)
+                    .stroke(border.color, lineWidth: border.width)
             }
         }
-    }//scroll
-}
-
-#endif
-
-@available(iOS 15.0.0, *)
-fileprivate struct ScaleEffectStyle: ButtonStyle {
-
-    private var props: SwiftyButtonProps
-    
-    public init(props: SwiftyButtonProps) {
-        self.props = props
     }
     
-    public func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .foregroundColor(props.getFgColor())
-            .font(props.font)
-            .scaleEffect(configuration.isPressed ? 0.8 : 1.0)
-            .opacity(configuration.isPressed ? 0.8 : 1.0)
-            .animation(.easeInOut, value: configuration.isPressed)
+    public func setPrimaryColor(_ color: Color) -> Self {
+        var view = self
+        view.primaryColor = color
+        return view
     }
-}
-
-public enum SwiftyButtonEffect {
-    case DEFAULT, SCALER
-}
+    public func setSecondaryColor(_ color: Color) -> Self {
+        var view = self
+        view.secondaryColor = color
+        return view
+    }
+    
+    public func setBorder(_ border: BorderProps) -> SwiftyButton {
+        var view = self
+        view.border = border
+        return view
+    }
+    public func setShadow(_ shadow: ShadowProps) -> SwiftyButton {
+        var view = self
+        view.shadow = shadow
+        return view
+    }
+    public func setCornerRadius(_ radius: CGFloat) -> SwiftyButton {
+        var view = self
+        view.cornerRadius = radius
+        return view
+    }
+    public func setPadding(_ padding: EdgeInsets) -> SwiftyButton {
+        var view = self
+        view.padding = padding
+        return view
+    }
+    public func setFont(_ font: Font) -> SwiftyButton {
+        var view = self
+        view.font = font
+        return view
+    }
+    public func setIcon(_ icon: Image) -> SwiftyButton {
+        var view = self
+        view.icon = icon
+        return view
+    }
+    public func setIconPos(_ pos: SwiftyButtonIconPos) -> SwiftyButton {
+        var view = self
+        view.iconPos = pos
+        return view
+    }
+    public func setIconSpacing(_ spacing: CGFloat) -> SwiftyButton {
+        var view = self
+        view.iconSpacing = spacing
+        return view
+    }
+    public func setShowOnlyIcon() -> SwiftyButton {
+        var view = self
+        view.showOnlyIcon = true
+        return view
+    }
+    public func setStyle(_ style: any LabelStyle) -> SwiftyButton {
+        var view = self
+        view.style = style
+        return view
+    }
+    public func setEffect(_ effect: any ButtonStyle) -> SwiftyButton {
+        var view = self
+        view.effect = effect
+        return view
+    }
+    public func setEffectScaler(if condition: Bool = true) -> SwiftyButton {
+        var view = self
+        if condition {
+            view.effect = ScaleEffectStyle(font: font, fgColor: secondaryColor)
+        }
+        return view
+    }
+}//SwiftyButton1
 
 @available(iOS 15.0, *)
-public struct SwiftyButtonProps {
-    public var font: Font
-    public var cornerRadius: CGFloat
-    public var padding: EdgeInsets
-    public var icon: Image?
-    public var iconPos: SwiftyButtonIconPos
-    public var iconSpacing: CGFloat
-    public var showOnlyIcon: Bool
-    public var shadow: ShadowProps?
-    public var border: BorderProps
-    public var style: SwiftyButtonStyle
-    public var colors: SwiftyButtonColors
-    public var effect: SwiftyButtonEffect
+fileprivate struct SwiftyButtonLabelStyle: LabelStyle {
     
-    public init(
-        font: Font = AppConfig.Buttons.font,
-        cornerRadius: CGFloat = AppConfig.Buttons.radius,
-        padding: EdgeInsets = AppConfig.Buttons.padding,
-        icon: Image? = nil,
-        iconPos: SwiftyButtonIconPos = .LEFT,
-        iconSpacing: CGFloat = 5.0,
-        showOnlyIcon: Bool = false,
-        shadow: ShadowProps? = nil,
-        border: BorderProps = AppConfig.Buttons.borderProps,
-        style: SwiftyButtonStyle = AppConfig.Buttons.style,
-        colors: SwiftyButtonColors = SwiftyButtonColors(),
-        effect: SwiftyButtonEffect = AppConfig.Buttons.effect
-    ) {
-        self.font = font
-        self.cornerRadius = cornerRadius
-        self.padding = padding
-        self.icon = icon
+    private var iconPos: SwiftyButtonIconPos
+    private var showOnlyIcon: Bool
+    private var spacing: CGFloat = 0.0
+    
+    public init(iconPos: SwiftyButtonIconPos, showOnlyIcon: Bool, iconSpacing: CGFloat) {
         self.iconPos = iconPos
-        self.iconSpacing = iconSpacing
-        self.colors = colors
         self.showOnlyIcon = showOnlyIcon
-        self.shadow = shadow
-        self.border = border
-        self.style = style
-        self.border.color = colors.forBorder(style)
-        self.effect = effect
-    }
-    
-    public func getBgColor() -> Color {
-        self.colors.forBackground(self.style)
-    }
-    public func getFgColor() -> Color {
-        self.colors.forForeground(self.style)
-    }
-    public func getBorderColor() -> Color {
-        self.colors.forBorder(self.style)
-    }
-}
-
-@available(iOS 15.0, *)
-public struct SwiftyButtonColors {
-    public var filledFg: Color
-    public var filledBg: Color
-    public var outlinedFg: Color
-    public var outlinedBg: Color
-    
-    public init(filledFg: Color = AppConfig.Buttons.filledFgColor, filledBg: Color = AppConfig.Buttons.filledBgColor, outlinedFg: Color = AppConfig.Buttons.outlinedFgColor, outlinedBg: Color = AppConfig.Buttons.outlinedBgColor) {
-        
-        self.filledFg = filledFg
-        self.filledBg = filledBg
-        self.outlinedFg = outlinedFg
-        self.outlinedBg = outlinedBg
-    }
-    
-    public init(primary: Color, secondary: Color) {
-        self.filledFg = secondary
-        self.filledBg = primary
-        
-        self.outlinedFg = primary
-        self.outlinedBg = secondary
-    }
-    
-    public func forBackground(_ style: SwiftyButtonStyle) -> Color {
-        style == .FILLED ? self.filledBg : self.outlinedBg
-    }
-    public func forForeground(_ style: SwiftyButtonStyle) -> Color {
-        style == .FILLED ? self.filledFg : self.outlinedFg
-    }
-    public func forBorder(_ style: SwiftyButtonStyle) -> Color {
-        style == .FILLED ? self.filledBg : self.outlinedFg
-    }
-}
-
-@available(iOS 15.0, *)
-public struct BorderProps {
-    public var color: Color
-    public var width: CGFloat
-    
-    public init(color: Color = AppConfig.primaryColor, width: CGFloat = 1.0) {
-        self.color = color
-        self.width = width
-    }
-    
-    public func getFocusWidth() -> CGFloat {
-        self.width + 1.0
-    }
-}
-
-@available(iOS 15.0, *)
-public struct ShadowProps {
-    public var color: Color
-    public var radius: CGFloat
-    public var x: CGFloat
-    public var y: CGFloat
-    
-    public init(color: Color = AppConfig.shadowColor, radius: CGFloat = 5.0, x: CGFloat = 5.0, y: CGFloat = 5.0) {
-        self.color = color
-        self.radius = radius
-        self.x = x
-        self.y = y
-    }
-}
-
-public enum SwiftyButtonStyle{
-    case FILLED, OUTLINED
-}
-public enum SwiftyButtonIconPos {
-    case LEFT, RIGHT, TOP, BOTTOM
-}
-
-@available(iOS 15.0, *)
-public struct SwiftyButtonLabelStyle: LabelStyle {
-    
-    private var props: SwiftyButtonProps
-    private var spacing = 0.0
-    
-    public init(props: SwiftyButtonProps) {
-        self.props = props
-        self.spacing = props.showOnlyIcon ? 0.0 : props.iconSpacing
+        self.spacing = showOnlyIcon ? 0.0 : iconSpacing
     }
     
     public func makeBody(configuration: Configuration) -> some View {
-        if props.showOnlyIcon {
+        if showOnlyIcon {
             configuration.icon
         } else {
             getView(configuration: configuration)
         }
     }
     
-    @ViewBuilder 
+    @ViewBuilder
     private func getView(configuration: Configuration) -> some View {
-        switch props.iconPos {
+        switch iconPos {
         case .LEFT:
             HStack(spacing: spacing){
                 configuration.icon
@@ -300,3 +200,55 @@ public struct SwiftyButtonLabelStyle: LabelStyle {
         }
     }
 }
+
+@available(iOS 15.0.0, *)
+fileprivate struct ScaleEffectStyle: ButtonStyle {
+
+    private var font: Font
+    private var fgColor: Color
+    public init(font: Font, fgColor: Color) {
+        self.font = font
+        self.fgColor = fgColor
+    }
+    
+    public func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .foregroundColor(fgColor)
+            .font(font)
+            .scaleEffect(configuration.isPressed ? 0.6 : 1.0)
+            .opacity(configuration.isPressed ? 0.8 : 1.0)
+            .animation(.easeInOut(duration: 0.1), value: configuration.isPressed)
+    }
+}
+
+#if DEBUG
+@available(iOS 15.0, *)
+#Preview{
+    VStack {
+        SwiftyButton(title: "filled") {
+            print("Button pressed")
+        }
+        .setPrimaryColor(.red)
+        .setSecondaryColor(.yellow)
+        .setBorder(BorderProps(color: .blue, width: 2.0))
+        .setCornerRadius(20.0)
+        .setPadding(EdgeInsets(top: 10, leading: 10, bottom: 10, trailing: 10))
+        .setFont(.largeTitle)
+        .setIcon(Image(systemName: "person"))
+        .setIconPos(.RIGHT)
+        .setIconSpacing(5.0)
+        .setEffectScaler()
+    }
+}
+
+@available(iOS 15.0, *)
+#Preview {
+    ScrollView {
+        VStack(spacing: 20) {
+
+        }
+    }//scroll
+}
+
+
+#endif

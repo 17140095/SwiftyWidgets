@@ -19,7 +19,11 @@ extension String {
     public var isBlank: Bool {
         self.trim.isEmpty
     }
-    
+    public var isEmail: Bool {
+        let emailRegex = #"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"#
+        let emailPredicate = NSPredicate(format: "SELF MATCHES %@", emailRegex)
+        return emailPredicate.evaluate(with: self)
+    }
     public func formatNumberOn(mask: String = "(###) ###-####", replaceChar: Character = "#") -> String {
         let cleanNumber = components(separatedBy: CharacterSet.decimalDigits.inverted).joined()
         
@@ -39,6 +43,29 @@ extension String {
         return result
     }
 }
+
+extension URLRequest {
+    public func printRequest() {
+        if let bodyData = self.httpBody {
+            do {
+                // Parse the httpBody data into a JSON object
+                if let jsonObject = try JSONSerialization.jsonObject(with: bodyData, options: []) as? [String: Any] {
+                    // Convert the JSON object to a Data object with pretty printing
+                    let jsonData = try JSONSerialization.data(withJSONObject: jsonObject, options: .prettyPrinted)
+                    // Convert the Data object to a string
+                    if let jsonString = String(data: jsonData, encoding: .utf8) {
+                        // Print the JSON string
+                        print("\n\nRequest: \(String(describing: self.url))\nBody\n: \(jsonString)")
+                        
+                    }
+                }
+            } catch {
+                print("Error printing request: \(error)")
+            }
+        }
+    }
+}
+
 extension Bundle {
     public func decode<T: Decodable>(_ file: String) -> T {
         guard let url = self.url(forResource: file, withExtension: nil) else {
@@ -179,7 +206,10 @@ extension View {
     
     @ViewBuilder public func border(props: BorderProps?) -> some View {
         if let props = props {
-            self.border(props.color, width: props.width)
+            self.overlay {
+                RoundedRectangle(cornerRadius: props.cornerRadius)
+                    .stroke(props.color, lineWidth: props.width)
+            }
         } else {
             self
         }
@@ -223,6 +253,13 @@ extension View {
         }
     }
     
+    @ViewBuilder public func clipShape<S>(_ shape: S, style: FillStyle = FillStyle(), if condition: Bool) -> some View where S : Shape {
+        if condition {
+            self.clipShape(shape, style: style)
+        } else {
+            self
+        }
+    }
     
     @ViewBuilder public func background<S>(_ style: Color, if condition: Bool = true) -> some View where S : ShapeStyle {
         self.background(condition ? style : .clear )
@@ -345,15 +382,14 @@ extension View {
         title: String,
         message: String,
         primaryAction: (name: String, perform: (()-> Void)) = ("OK", {}),
-        secondaryAction: (name: String, perform: (()-> Void)) = ("", {}),
-        props: SwiftyAlertProps = SwiftyAlertProps()
+        secondaryAction: (name: String, perform: (()-> Void)) = ("", {})
     )-> some View {
         if isPresented.wrappedValue {
             ZStack {
                 self // Original content
                     .disabled(isPresented.wrappedValue)
                     .blur(radius: isPresented.wrappedValue ? 3 : 0)
-                SwiftyAlert(isPresented: isPresented, title: title, message: message, props: props, primaryAction: primaryAction, secondaryAction: secondaryAction)
+                SwiftyAlert(isPresented: isPresented, title: title, message: message, primaryAction: primaryAction, secondaryAction: secondaryAction)
             }
             
         } else {
@@ -361,4 +397,16 @@ extension View {
         }
     }
     
+    @ViewBuilder public func swiftyAlert<V: View>(isPresented: Binding<Bool>, content: ()-> V) -> some View {
+        if isPresented.wrappedValue {
+            ZStack {
+                self // Original content
+                    .disabled(isPresented.wrappedValue)
+                    .blur(radius: isPresented.wrappedValue ? 3 : 0)
+                content()
+            }
+        } else {
+            self
+        }
+    }
 }
