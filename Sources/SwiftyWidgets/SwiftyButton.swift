@@ -241,14 +241,4 @@ fileprivate struct ScaleEffectStyle: ButtonStyle {
     }
 }
 
-@available(iOS 15.0, *)
-#Preview {
-    ScrollView {
-        VStack(spacing: 20) {
-
-        }
-    }//scroll
-}
-
-
 #endif

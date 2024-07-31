@@ -79,21 +79,31 @@ public enum AppConfig {
     
     public enum Selectors {
         public enum ImageSelector {
-            public static var color = AppConfig.primaryColor
-            public static var width: CGFloat = 3
+            public static var primaryColor: Color = AppConfig.primaryColor
+            public static var secondaryColor: Color = AppConfig.secondaryColor
+            public static var border: BorderProps? = BorderProps()
+            public static var shadow: ShadowProps? = ShadowProps(color: .clear)
+            public static var cornerRadius: CGFloat = 0
+            public static var padding: EdgeInsets = EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0)
+            public static var font: Font = AppConfig.font
+           
+            public static var background: Color = .clear
+            public static var style: Axis.Set = .horizontal
+            public static var space: CGFloat = 0
         }
         
         public enum SegmentedSelector {
             public static var font: Font = AppConfig.font
-            public static var cRadius: CGFloat = 10.0
+            public static var cornerRadius: CGFloat = 10.0
             public static var primaryColor: Color = AppConfig.primaryColor
             public static var secondaryColor: Color = AppConfig.secondaryColor
             public static var showBorder: Bool = false
             public static var roundStyle: PickerRoundStyle = .NO_ROUND
-            public static var spacing: CGFloat = 1
+            public static var spacing: CGFloat = 0
             public static var direction: Axis.Set = .horizontal
             public static var padding: EdgeInsets = EdgeInsets(top: 10, leading: 0, bottom: 10, trailing: 0)
-            public static var borderWidth: CGFloat = 2
+            public static var border: BorderProps = BorderProps(color: primaryColor, width: 2)
+            public static var shadow: ShadowProps = ShadowProps()
         }
         
         public enum InputSelector {

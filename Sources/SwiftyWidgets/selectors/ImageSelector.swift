@@ -8,32 +8,50 @@
 import SwiftUI
 
 @available(iOS 15.0.0, *)
-public struct ImageSelector: View {
+public struct ImageSelector: View, BaseProps {
+    public var primaryColor: Color = AppConfig.Selectors.ImageSelector.primaryColor
+    public var secondaryColor: Color = AppConfig.Selectors.ImageSelector.secondaryColor
+    public var border: BorderProps? = AppConfig.Selectors.ImageSelector.border
+    public var shadow: ShadowProps? = AppConfig.Selectors.ImageSelector.shadow
+    public var cornerRadius: CGFloat = AppConfig.Selectors.ImageSelector.cornerRadius
+    public var padding: EdgeInsets = AppConfig.Selectors.ImageSelector.padding
+    public var font: Font = AppConfig.Selectors.ImageSelector.font
+    
+    public var background: Color = AppConfig.Selectors.ImageSelector.background
+    public var style: Axis.Set = AppConfig.Selectors.ImageSelector.style
+    public var space: CGFloat = AppConfig.Selectors.ImageSelector.space
+    
     let images: [Image]
     @Binding var select: Int
-    var props: ImageSelectorProps = ImageSelectorProps()
+    
     public var body: some View {
-        if props.style == .HORIZONTAL {
-            HStack(spacing: props.customSpace) {
-                imagesView
-            }
-        } else {
-            VStack(spacing: props.customSpace) {
-                imagesView
+        Group {
+            if style == .horizontal {
+                HStack(spacing: space) {
+                    imagesView
+                }
+            } else {
+                VStack(spacing: space) {
+                    imagesView
+                }
             }
         }
+        .padding(padding)
+        .background(background)
+        .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
+        .shadow(props: shadow)
     }
     
     private var imagesView: some View {
         ForEach(0..<images.count, id: \.self) { index in
                 images[index]
-                .border(props.selectionColor, width: props.selectionWidth, if: select == index)
+                .border(props: border ?? BorderProps(), isFocus: true, isError: false, if: select == index)
                 .onTapGesture {
                     withAnimation {
                         select = index
                     }
                 }
-            if props.customSpace < 1 && index != images.count-1 {
+            if space < 1 && index != images.count-1 {
                 Spacer()
             }
         }
@@ -41,23 +59,57 @@ public struct ImageSelector: View {
 }
 
 @available(iOS 15.0.0, *)
-public struct ImageSelectorProps {
-    public var selectionColor = AppConfig.primaryColor
-    public var selectionWidth: CGFloat = 3
-    public var style: Orientation = .HORIZONTAL
-    public var customSpace: CGFloat = 0
-    
-    public init(selectionColor: Color = AppConfig.primaryColor, selectionWidth: CGFloat = 3, style: Orientation = .HORIZONTAL, customSpace: CGFloat = 0) {
-        self.selectionColor = selectionColor
-        self.selectionWidth = selectionWidth
-        self.style = style
-        self.customSpace = customSpace
+extension ImageSelector {
+    public func setPrimaryColor(_ color: Color) -> Self {
+        var copy = self
+        copy.primaryColor = color
+        return copy
     }
-}
-
-@available(iOS 15.0.0, *)
-public enum Orientation {
-    case VERTICAL, HORIZONTAL
+    public func setSecondaryColor(_ color: Color) -> Self {
+        var copy = self
+        copy.secondaryColor = color
+        return copy
+    }
+    public func setBorder(_ border: BorderProps) -> Self {
+        var copy = self
+        copy.border = border
+        return copy
+    }
+    public func setShadow(_ shadow: ShadowProps) -> Self {
+        var copy = self
+        copy.shadow = shadow
+        return copy
+    }
+    public func setCornerRadius(_ radius: CGFloat) -> Self {
+        var copy = self
+        copy.cornerRadius = radius
+        return copy
+    }
+    public func setPadding(_ padding: EdgeInsets) -> Self {
+        var copy = self
+        copy.padding = padding
+        return copy
+    }
+    public func setFont(_ font: Font) -> Self {
+        var copy = self
+        copy.font = font
+        return copy
+    }
+    public func setBackground(_ color: Color) -> Self {
+        var copy = self
+        copy.background = color
+        return copy
+    }
+    public func setStyle(_ style: Axis.Set) -> Self {
+        var copy = self
+        copy.style = style
+        return copy
+    }
+    public func setSpace(_ space: CGFloat) -> Self {
+        var copy = self
+        copy.space = space
+        return copy
+    }
 }
 
 
@@ -65,13 +117,26 @@ public enum Orientation {
 @available(iOS 15.0, *)
 struct TestImageSelector: View {
     @State private var select = 0
+    private var images = [
+        Image(systemName: "arrow.left"),
+        Image(systemName: "arrow.right"),
+        Image(systemName: "arrow.up"),
+        Image(systemName: "arrow.down")
+    ]
     var body: some View {
-        ImageSelector(images: [
-            Image(systemName: "arrow.left"),
-            Image(systemName: "arrow.right"),
-            Image(systemName: "arrow.up"),
-            Image(systemName: "arrow.down")
-        ], select: $select, props: ImageSelectorProps(selectionWidth: 3, style: .HORIZONTAL, customSpace: 20))
+        ImageSelector(images: images, select: $select)
+//            .setStyle(.vertical)
+//            .setBackground(.red)
+//            .setPadding(EdgeInsets(top: 10, leading: 10, bottom: 10, trailing: 10))
+//            .setCornerRadius(20)
+//            .setShadow(ShadowProps(color: .black, radius: 5, x: 5, y: 5))
+        ImageSelector(images: images, select: $select)
+//            .setStyle(.horizontal)
+//            .setBackground(.red)
+//            .setPadding(EdgeInsets(top: 10, leading: 10, bottom: 10, trailing: 10))
+//            .setCornerRadius(20)
+//            .setShadow(ShadowProps(color: .black, radius: 5, x: 5, y: 5))
+//            .setSpace(0)
     }
 }
 
