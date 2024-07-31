@@ -88,10 +88,6 @@ public struct CountrySelector: View, BaseProps {
             .padding(.top, padding.top, if: style == .UNDERLINED)
             .padding(.bottom, padding.bottom, if: style == .UNDERLINED)
             .frame(minWidth: 100)
-            .onTapGesture {
-                presentSheet = true
-                keyIsFocused = false
-            }
             .animation(.easeInOut(duration: 0.6), value: keyIsFocused)
             .sheet(isPresented: $presentSheet) {
                 NavigationView {
@@ -130,6 +126,10 @@ public struct CountrySelector: View, BaseProps {
         .overlay(if: showBorder && style == .BORDERD) {
             RoundedRectangle(cornerRadius: cornerRadius)
                 .stroke(border?.color ?? .clear, lineWidth: border?.width ?? 0)
+        }
+        .onTapGesture {
+            presentSheet = true
+            keyIsFocused = false
         }
         
     }
