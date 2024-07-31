@@ -8,7 +8,33 @@
 import SwiftUI
 
 @available(iOS 15.0, *)
-public struct SwiftyAlert: View {
+public struct SwiftyAlert: View, BaseProps {
+    public var primaryColor: Color = AppConfig.Alert.primaryColor
+    public var secondaryColor: Color = AppConfig.Alert.secondaryColor
+    public var border: BorderProps? = nil
+    public var shadow: ShadowProps? = nil
+    public var cornerRadius: CGFloat = AppConfig.Alert.cornerRadius
+    public var padding: EdgeInsets = AppConfig.Alert.padding
+    public var font: Font = AppConfig.Alert.font
+    
+    public var background: Color = AppConfig.Alert.background
+    public var headerImage: Image? = nil
+    public var headerImageSize: CGFloat = AppConfig.Alert.headerImageSize
+    public var headerBackground: Color = AppConfig.Alert.headerBackground
+    public var headerPadding: EdgeInsets = AppConfig.Alert.headerPadding
+    public var titlePadding: EdgeInsets = AppConfig.Alert.titlePadding
+    public var msgPadding: EdgeInsets = AppConfig.Alert.msgPadding
+    public var shouldActionsVertical: Bool = AppConfig.Alert.shouldActionsVertical
+    public var iconFont: Font = AppConfig.Alert.iconFont
+    public var messageColor: Color = AppConfig.Alert.messageColor
+    public var animationStyle: AnyTransition = AppConfig.Alert.animationStyle
+    public var animationDuration: CGFloat = AppConfig.Alert.animationDuration
+    
+    public var actionsPadding: EdgeInsets = AppConfig.Alert.actionsPadding
+    public var actionsCornerRadius: CGFloat = AppConfig.Alert.actionsCornerRadius
+    public var actionsSpacing: CGFloat = AppConfig.Alert.actionsSpacing
+    public var actionsFont: Font = AppConfig.Alert.actionsFont
+    public var applyActionsScalerEffect: Bool = AppConfig.Alert.applyActionsScalerEffect
     
     @State private var isAnimating = false
     @Binding private var isPresented: Bool
@@ -16,20 +42,17 @@ public struct SwiftyAlert: View {
     private let secondaryAction: (name: String, perform: (()-> Void))
     private let title: String
     private let message: String
-    private let props: SwiftyAlertProps
     
     public init(
         isPresented: Binding<Bool>,
         title: String,
         message: String,
-        props: SwiftyAlertProps,
         primaryAction: (name: String, perform: () -> Void),
         secondaryAction: (name: String, perform: () -> Void) = ("", {})
     ) {
         self._isPresented = isPresented
         self.title = title
         self.message = message
-        self.props = props
         self.primaryAction = primaryAction
         self.secondaryAction = secondaryAction
     }
@@ -38,47 +61,50 @@ public struct SwiftyAlert: View {
         VStack {
             if isAnimating {
                 VStack(spacing: 0) {
-                    VStack {
-                        /// Image
-                        if let header = props.headerImage {
-                            HStack {
-                                Spacer()
+                    VStack(spacing: 0) {
+                        /// header of image and title
+                        VStack(spacing: 0) {
+                            if let header = headerImage {
                                 header
                                     .resizable()
-                                    .frame(width: 50, height: 50)
-                                    .fgStyle(props.primaryColor)
-                                    .font(props.iconFont)
-                                    .padding(props.headerPadding)
-                                Spacer()
+                                    .frame(width: headerImageSize, height: headerImageSize)
+                                    .fgStyle(primaryColor)
+                                    .font(iconFont)
+                                    .padding(headerPadding)
+                                    .frame(maxWidth: .infinity)
                             }
-                            .background(props.headerBackground)
+                            if !title.isEmpty {
+                                Text(title)
+                                    .font(font).bold()
+                                    .fgStyle(primaryColor)
+                                    .padding(titlePadding)
+                                    .frame(maxWidth: .infinity)
+                                    .zIndex(1)
+                            }
                         }
+                        .background(headerBackground)
                         
-                        /// Title
-                        if !title.isEmpty {
-                            Text(title)
-                                .font(props.font).bold()
-                                .fgStyle(props.primaryColor)
-                                .padding(props.titlePadding)
-                                .zIndex(1)
-                        }
+                        Divider()
+                        
                         /// Message
                         Text(message)
-                            .fgStyle(props.messageColor)
+                            .fgStyle(messageColor)
                             .multilineTextAlignment(.center)
-                            .font(props.font)
-                            .padding(props.msgPadding)
+                            .font(font)
+                            .padding(msgPadding)
+                            .frame(minHeight: 100)
                         
+                        Divider()
                         /// Buttons
-                        if props.shouldActionsVertical {
-                            VStack(spacing: props.actionsSpacing) {
+                        if shouldActionsVertical {
+                            VStack(spacing: actionsSpacing) {
                                 PrimaryButton
                                 if !secondaryAction.name.isEmpty {
                                     SecondaryButton
                                 }
                             }
                         } else {
-                            HStack(spacing: props.actionsSpacing) {
+                            HStack(spacing: actionsSpacing) {
                                 PrimaryButton
                                 if !secondaryAction.name.isEmpty {
                                     SecondaryButton
@@ -89,12 +115,14 @@ public struct SwiftyAlert: View {
                         }
                     }
                     .frame(maxWidth: .infinity)
-                    .background(props.background)
-                    .cornerRadius(props.cornerRadius)
-                    .shadow(props: ShadowProps())
+                    .border(props: border)
+                    .background(background)
+                    .contentShape(RoundedRectangle(cornerRadius: cornerRadius))
+                    .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
+                    .shadow(props: shadow)
                 }
                 .padding()
-                .transition(.slide)
+                .transition(animationStyle)
             }// if
             
         }
@@ -105,154 +133,229 @@ public struct SwiftyAlert: View {
     }//body
     
     var SecondaryButton: some View {
-        SwiftyButton(title: secondaryAction.name, props: getActionProps(isPrimary: false)) {
+        SwiftyButton(title: secondaryAction.name) {
             dismiss()
             secondaryAction.perform()
         }
+        .setFont(actionsFont)
+        .setCornerRadius(actionsCornerRadius)
+        .setPrimaryColor(secondaryColor)
+        .setSecondaryColor(primaryColor)
+        .setEffectScaler(if: applyActionsScalerEffect)
     }
     
-    private var PrimaryButton: some View {
-        SwiftyButton(title: primaryAction.name, props: getActionProps(isPrimary: true)) {
+    private var PrimaryButton: SwiftyButton {
+        SwiftyButton(title: primaryAction.name) {
             dismiss()
             primaryAction.perform()
         }
+        .setFont(actionsFont)
+        .setCornerRadius(actionsCornerRadius)
+        .setPrimaryColor(primaryColor)
+        .setSecondaryColor(secondaryColor)
+        .setEffectScaler(if: applyActionsScalerEffect)
     }
     
     
     private func dismiss() {
         if #available(iOS 17.0, *) {
-            withAnimation(.easeInOut(duration: props.animationDuration)) {
+            withAnimation(.easeInOut(duration: animationDuration)) {
                 isAnimating = false
             } completion: {
                 isPresented = false
             }
         } else {
-            withAnimation(.easeInOut(duration: props.animationDuration)) {
+            withAnimation(.easeInOut(duration: animationDuration)) {
                 isAnimating = false
             }
-            DispatchQueue.main.asyncAfter(deadline: .now() + props.animationDuration) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + animationDuration) {
                 isPresented = false
             }
         }
     }
     
     private func show() {
-        withAnimation(.easeInOut(duration: props.animationDuration)) {
+        withAnimation(.easeInOut(duration: animationDuration)) {
             isAnimating = true
         }
     }
     
-    private func getActionProps(isPrimary: Bool) -> SwiftyButtonProps {
-        SwiftyButtonProps(
-            font: props.font,
-            cornerRadius: props.actionsCornerRadius,
-            style: props.actionsStyle,
-            colors: SwiftyButtonColors(
-                primary: isPrimary ? props.primaryColor : props.secondaryColor,
-                secondary: isPrimary ? props.secondaryColor : props.primaryColor
-            ),
-            effect: .DEFAULT
-        )
+    public func setPrimaryColor(_ color: Color) -> SwiftyAlert {
+        var alert = self
+        alert.primaryColor = color
+        return alert
+    }
+    public func setSecondaryColor(_ color: Color) -> SwiftyAlert {
+        var alert = self
+        alert.secondaryColor = color
+        return alert
+    }
+    public func setBorder(_ border: BorderProps) -> SwiftyAlert {
+        var alert = self
+        alert.border = border
+        alert.border?.cornerRadius = cornerRadius
+        return alert
+    }
+    public func setShadow(_ shadow: ShadowProps) -> SwiftyAlert {
+        var alert = self
+        alert.shadow = shadow
+        return alert
+    }
+    public func setCornerRadius(_ radius: CGFloat) -> SwiftyAlert {
+        var alert = self
+        alert.cornerRadius = radius
+        return alert
+    }
+    public func setPadding(_ padding: EdgeInsets) -> SwiftyAlert {
+        var alert = self
+        alert.padding = padding
+        return alert
+    }
+    public func setFont(_ font: Font) -> SwiftyAlert {
+        var alert = self
+        alert.font = font
+        return alert
     }
     
-}//SweetyAlert
+    public func setBackGround(_ color: Color) -> SwiftyAlert {
+        var alert = self
+        alert.background = color
+        return alert
+    }
+    public func setHeaderImage(_ image: Image) -> SwiftyAlert {
+        var alert = self
+        alert.headerImage = image
+        return alert
+    }
+    public func setHeaderImageSize(_ size: CGFloat) -> SwiftyAlert {
+        var alert = self
+        alert.headerImageSize = size
+        return alert
+    }
+    public func setHeaderBackground(_ color: Color) -> SwiftyAlert {
+        var alert = self
+        alert.headerBackground = color
+        return alert
+    }
+    public func setHeaderPadding(_ padding: EdgeInsets) -> SwiftyAlert {
+        var alert = self
+        alert.headerPadding = padding
+        return alert
+    }
+    public func setTitlePadding(_ padding: EdgeInsets) -> SwiftyAlert {
+        var alert = self
+        alert.titlePadding = padding
+        return alert
+    }
+    public func setTitlePadding(_ value: CGFloat) -> SwiftyAlert {
+        var alert = self
+        alert.titlePadding = EdgeInsets(top: value, leading: value, bottom: value, trailing: value)
+        return alert
+    }
+    public func setMsgPadding(_ padding: EdgeInsets) -> SwiftyAlert {
+        var alert = self
+        alert.msgPadding = padding
+        return alert
+    }
+    public func setShouldActionsVertical(_ should: Bool) -> SwiftyAlert {
+        var alert = self
+        alert.shouldActionsVertical = should
+        return alert
+    }
+    public func setIconFont(_ font: Font) -> SwiftyAlert {
+        var alert = self
+        alert.iconFont = font
+        return alert
+    }
+    public func setMessageColor(_ color: Color) -> SwiftyAlert {
+        var alert = self
+        alert.messageColor = color
+        return alert
+    }
+    public func setAnimationStyle(_ style: AnyTransition) -> SwiftyAlert {
+        var alert = self
+        alert.animationStyle = style
+        return alert
+    }
+    public func setAnimationDuration(_ duration: CGFloat) -> SwiftyAlert {
+        var alert = self
+        alert.animationDuration = duration
+        return alert
+    }
+    public func setActionsPadding(_ padding: EdgeInsets) -> SwiftyAlert {
+        var alert = self
+        alert.actionsPadding = padding
+        return alert
+    }
+    public func setActionsCornerRadius(_ radius: CGFloat) -> SwiftyAlert {
+        var alert = self
+        alert.actionsCornerRadius = radius
+        return alert
+    }
+    public func setActionsSpacing(_ spacing: CGFloat) -> SwiftyAlert {
+        var alert = self
+        alert.actionsSpacing = spacing
+        return alert
+    }
+    public func setActionsFont(_ font: Font) -> SwiftyAlert {
+        var alert = self
+        alert.actionsFont = font
+        return alert
+    }
+    public func setApplyActionsScalerEffect() -> SwiftyAlert {
+        var alert = self
+        alert.applyActionsScalerEffect = true
+        return alert
+    }
+    
+}//SwifptyAlert
 
-@available(iOS 15.0, *)
-public struct SwiftyAlertProps {
-    public let background: Color
-    public let headerImage: Image?
-    public let headerImageSize: CGFloat
-    public let headerBackground: Color
-    public let padding: EdgeInsets
-    public let headerPadding: EdgeInsets
-    public let titlePadding: EdgeInsets
-    public let msgPadding: EdgeInsets
-    public let actionsPadding: EdgeInsets
-    public let actionsCornerRadius: CGFloat
-    public let actionsSpacing: CGFloat
-    public let shouldActionsVertical: Bool
-    public let font: Font
-    public let iconFont: Font
-    public let primaryColor: Color
-    public let secondaryColor: Color
-    public let messageColor: Color
-    public let cornerRadius: CGFloat
-    public let actionsStyle: SwiftyButtonStyle
-    public let animationStyle: AnyTransition
-    public let animationDuration: CGFloat
-    
-    public init(
-        background: Color = AppConfig.Alert.background,
-        headerImage: Image? = nil,
-        headerImageSize: CGFloat = AppConfig.Alert.headerImageSize,
-        headerBackground: Color = .clear,
-        padding: EdgeInsets = AppConfig.Alert.padding,
-        headerPadding: EdgeInsets = AppConfig.Alert.headerPadding,
-        titlePadding: EdgeInsets = AppConfig.Alert.titlePadding,
-        msgPadding: EdgeInsets = AppConfig.Alert.msgPadding,
-        actionsPadding: EdgeInsets = AppConfig.Alert.actionsPadding,
-        actionsCornerRadius: CGFloat = AppConfig.Alert.actionsCornerRadius,
-        actionsSpacing: CGFloat = AppConfig.Alert.actionsSpacing,
-        shouldActionsVertical: Bool = AppConfig.Alert.shouldActionsVertical,
-        font: Font = AppConfig.Alert.font,
-        iconFont: Font = AppConfig.Alert.iconFont,
-        primaryColor: Color = AppConfig.Alert.primaryColor,
-        secondaryColor: Color = AppConfig.Alert.secondaryColor,
-        messageColor: Color = AppConfig.Alert.messageColor,
-        cornerRadius: CGFloat = AppConfig.Alert.cornerRadius,
-        actionsStyle: SwiftyButtonStyle = AppConfig.Alert.actionsStyle,
-        animationStyle: AnyTransition = AppConfig.Alert.animationStyle,
-        animationDuration: CGFloat = AppConfig.Alert.animationDuration
-    ) {
-        
-        self.background = background
-        self.headerImage = headerImage
-        self.headerImageSize = headerImageSize
-        self.headerBackground = headerBackground
-        self.padding = padding
-        self.headerPadding = headerPadding
-        self.titlePadding = titlePadding
-        self.msgPadding = msgPadding
-        self.actionsPadding = actionsPadding
-        self.actionsCornerRadius = actionsCornerRadius
-        self.actionsSpacing = actionsSpacing
-        self.shouldActionsVertical = shouldActionsVertical
-        self.font = font
-        self.iconFont = iconFont
-        self.primaryColor = primaryColor
-        self.secondaryColor = secondaryColor
-        self.messageColor = messageColor
-        self.cornerRadius = cornerRadius
-        self.actionsStyle = actionsStyle
-        self.animationStyle = animationStyle
-        self.animationDuration = animationDuration
-    }
-    
-}
+
 
 #if DEBUG
 @available(iOS 15.0.0, *)
 public struct TestSwiftyAlert: View {
     @State private var isPresented: Bool = false
+    @State private var isPresented1: Bool = false
+    @State private var isPresented2: Bool = false
+    @State private var isPresented3: Bool = false
+    
     public var body: some View {
         VStack {
             SwiftyButton(title: "Button") {
                 isPresented = true
             }
+            .setPrimaryColor(.red)
+           
+            
             SwiftyButton(title: "Button") {
-                isPresented = true
+                isPresented1 = true
+            }
+            
+            SwiftyButton(title: "Button") {
+                isPresented2 = true
             }
             SwiftyButton(title: "Button") {
-                isPresented = true
+                isPresented3 = true
             }
-            SwiftyButton(title: "Button") {
-                isPresented = true
-            }
+            
+            
             SwiftyButton(title: "Button") {
                 isPresented = true
             }
         }
         .swiftyAlert(isPresented: $isPresented,title: "Test", message: "This is test alert")
+        .swiftyAlert(isPresented: $isPresented1,title: "Test", message: "This is test alert", primaryAction: (name: "OK1", {}), secondaryAction: (name: "Cancel1", {}))
+        .swiftyAlert(isPresented: $isPresented3) {
+            SwiftyAlert(isPresented: $isPresented3, title: "Test 3", message: "This is test 3 message This is test 3 message This is test 3 message", primaryAction: (name:"OK3", {}), secondaryAction: (name: "Cancel3", {}))
+//                .setBackGround(.red)
+                .setHeaderImage(Image(systemName: "person"))
+//                .setHeaderImageSize(24)
+//                .setHeaderBackground(.yellow)
+//                .setTitlePadding(20)
+                .setApplyActionsScalerEffect()
+                .setBorder(BorderProps(color: .red, width: 2))
+        }
     }
 }
 

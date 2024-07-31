@@ -1,6 +1,6 @@
 //
-//  SwiftUIView.swift
-//  
+//  SegmentedSelector.swift
+//
 //
 //  Created by Ali Raza on 24/05/2024.
 //
@@ -8,66 +8,81 @@
 import SwiftUI
 
 @available(iOS 15.0.0, *)
-public struct SegmentedSelector: View {
+public struct SegmentedSelector: View, BaseProps {
+    public var primaryColor: Color = AppConfig.Selectors.SegmentedSelector.primaryColor
+    public var secondaryColor: Color = AppConfig.Selectors.SegmentedSelector.secondaryColor
+    public var border: BorderProps? = AppConfig.Selectors.SegmentedSelector.border
+    public var shadow: ShadowProps? = AppConfig.Selectors.SegmentedSelector.shadow
+    public var cornerRadius: CGFloat = AppConfig.Selectors.SegmentedSelector.cornerRadius
+    public var padding: EdgeInsets = AppConfig.Selectors.SegmentedSelector.padding
+    public var font: Font = AppConfig.Selectors.SegmentedSelector.font
     
-    var columns: [GridItem]
+    public var showBorder: Bool = AppConfig.Selectors.SegmentedSelector.showBorder
+    public var roundStyle: PickerRoundStyle = AppConfig.Selectors.SegmentedSelector.roundStyle
+    public var spacing: CGFloat = AppConfig.Selectors.SegmentedSelector.spacing
+    public var direction: Axis.Set = AppConfig.Selectors.SegmentedSelector.direction
+    
     var arr: [String]
     @Binding var select: Int
     
-    let props: SegmentedSelectorProps
     
-    init(arr: [String], select: Binding<Int>, props: SegmentedSelectorProps = SegmentedSelectorProps()) {
+    init(arr: [String], select: Binding<Int>) {
         self.arr = arr
         self._select = select
-        self.props = props
-        if props.direction == .horizontal {
-            columns = Array(repeating: GridItem(spacing: props.spacing), count: arr.count)
-        } else {
-            columns = Array(repeating: GridItem(.flexible(), spacing: props.spacing), count: 1)
-        }
     }
-    
     public var body: some View {
-        LazyVGrid(columns: columns, spacing: props.spacing) {
-            ForEach(Array(arr.enumerated()), id: \.element) { index, translation in
-                Button {
-                    select = index
-                } label: {
-                    ZStack {
-                        Rectangle()
-                            .foregroundColor(index == select ? props.primaryColor : props.secondaryColor)
-                            .clipShape(MyRectangle(radius: getRadius(index: index), corners: getCorners(index: index)))
-                        Text(translation)
-                            .padding(props.padding)
-                            .font(props.font)
-                            .foregroundColor(index != select ? props.primaryColor : props.secondaryColor )
-                    }
+        Group {
+            if direction == .horizontal {
+                LazyVGrid(columns: Array(repeating: GridItem(spacing: spacing), count: arr.count), spacing: spacing) {
+                    segmentedButtons
+                }
+            } else {
+                LazyVGrid(columns: [GridItem(.flexible(), spacing: spacing)], spacing: spacing) {
+                    segmentedButtons
                 }
             }
         }
-        .foregroundColor(props.primaryColor)
-        .overlay(if: props.showBorder, content: {
+        .foregroundColor(primaryColor)
+        .overlay(if: showBorder) {
             RoundedRectangle(cornerRadius: getRadius())
-                .stroke(props.primaryColor, lineWidth: props.borderWidth)
-        })
-        
+                .stroke(primaryColor, lineWidth: border?.width ?? 1)
+        }
         .font(.callout)
-        .background(props.primaryColor, if: props.showBorder)
+        .background(primaryColor, if: showBorder)
         .cornerRadius(getRadius())
     }
     
+    private var segmentedButtons: some View {
+        ForEach(Array(arr.enumerated()), id: \.element) { index, translation in
+            Button {
+                select = index
+            } label: {
+                ZStack {
+                    Rectangle()
+                        .foregroundColor(index == select ? primaryColor : secondaryColor)
+                        .clipShape(MyRectangle(radius: getRadius(index: index), corners: getCorners(index: index)))
+                    Text(translation)
+                        .padding(padding)
+                        .font(font)
+                        .foregroundColor(index != select ? primaryColor : secondaryColor )
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
+        }
+    }
+    
     private func getRadius() -> CGFloat {
-        props.roundStyle == .NO_ROUND ? 0 : props.cRadius
+        roundStyle == .NO_ROUND ? 0 : cornerRadius
     }
     
     private func getRadius(index: Int) -> CGFloat {
         var toReturn: CGFloat = 0
         
-        switch props.roundStyle {
+        switch roundStyle {
         case .ALL_ROUND:
-            toReturn = props.cRadius
+            toReturn = cornerRadius
         case .SIDE_ROUND:
-            toReturn = (index == 0 || index == arr.count - 1) ? props.cRadius : 0
+            toReturn = (index == 0 || index == arr.count - 1) ? cornerRadius : 0
         case .NO_ROUND:
             toReturn = 0
         }
@@ -78,7 +93,7 @@ public struct SegmentedSelector: View {
     private func getCorners(index: Int) -> UIRectCorner {
         var toReturn: UIRectCorner = []
         
-        switch props.roundStyle {
+        switch roundStyle {
         case .ALL_ROUND:
             toReturn = [.allCorners]
         case .NO_ROUND:
@@ -93,7 +108,69 @@ public struct SegmentedSelector: View {
         
         return toReturn
     }
+}
+
+@available(iOS 15.0.0, *)
+extension SegmentedSelector {
+    public func setPrimaryColor(_ color: Color) -> Self {
+        var copy = self
+        copy.primaryColor = color
+        return copy
+    }
+    public func setSecondaryColor(_ color: Color) -> Self {
+        var copy = self
+        copy.secondaryColor = color
+        return copy
+    }
+    public func setBorder(_ border: BorderProps) -> Self {
+        var copy = self
+        copy.border = border
+        return copy
+    }
+    public func setShadow(_ shadow: ShadowProps) -> Self {
+        var copy = self
+        copy.shadow = shadow
+        return copy
+    }
+    public func setCornerRadius(_ radius: CGFloat) -> Self {
+        var copy = self
+        copy.cornerRadius = radius
+        return copy
+    }
+    public func setPadding(_ padding: EdgeInsets) -> Self {
+        var copy = self
+        copy.padding = padding
+        return copy
+    }
+    public func setFont(_ font: Font) -> Self {
+        var copy = self
+        copy.font = font
+        return copy
+    }
     
+    public func setShowBorder(_ show: Bool) -> Self {
+        var copy = self
+        copy.showBorder = show
+        return copy
+    }
+    
+    public func setRoundStyle(_ style: PickerRoundStyle) -> Self {
+        var copy = self
+        copy.roundStyle = style
+        return copy
+    }
+    
+    public func setSpacing(_ spacing: CGFloat) -> Self {
+        var copy = self
+        copy.spacing = spacing
+        return copy
+    }
+    
+    public func setDirection(_ direction: Axis.Set) -> Self {
+        var copy = self
+        copy.direction = direction
+        return copy
+    }
 }
 
 @available(iOS 15.0, *)
@@ -107,48 +184,10 @@ public enum PickerRoundStyle {
 fileprivate struct MyRectangle: Shape {
     var radius: CGFloat
     var corners: UIRectCorner
-
+    
     func path(in rect: CGRect) -> Path {
         let path = UIBezierPath(roundedRect: rect, byRoundingCorners: corners, cornerRadii: CGSize(width: radius, height: radius))
         return Path(path.cgPath)
-    }
-}
-
-@available(iOS 15.0, *)
-public struct SegmentedSelectorProps {
-    public var font: Font
-    public var cRadius: CGFloat
-    public var primaryColor: Color
-    public var secondaryColor: Color
-    public var showBorder: Bool
-    public var roundStyle: PickerRoundStyle
-    public var spacing: CGFloat
-    public var direction: Axis.Set
-    public var padding: EdgeInsets
-    public var borderWidth: CGFloat
-    
-    public init(
-        font: Font = AppConfig.Selectors.SegmentedSelector.font,
-        cRadius: CGFloat = AppConfig.Selectors.SegmentedSelector.cRadius,
-        primaryColor: Color = AppConfig.Selectors.SegmentedSelector.primaryColor,
-        secondaryColor: Color = AppConfig.Selectors.SegmentedSelector.secondaryColor,
-        showBorder: Bool = AppConfig.Selectors.SegmentedSelector.showBorder,
-        roundStyle: PickerRoundStyle = AppConfig.Selectors.SegmentedSelector.roundStyle,
-        spacing: CGFloat = AppConfig.Selectors.SegmentedSelector.spacing,
-        direction: Axis.Set = AppConfig.Selectors.SegmentedSelector.direction,
-        padding: EdgeInsets = AppConfig.Selectors.SegmentedSelector.padding,
-        borderWidth: CGFloat = AppConfig.Selectors.SegmentedSelector.borderWidth
-    ) {
-        self.font = font
-        self.cRadius = cRadius
-        self.primaryColor = primaryColor
-        self.secondaryColor = secondaryColor
-        self.showBorder = showBorder
-        self.roundStyle = roundStyle
-        self.spacing = spacing
-        self.direction = direction
-        self.padding = padding
-        self.borderWidth = borderWidth
     }
 }
 
@@ -163,6 +202,13 @@ struct TestSegmented: View {
     
     var body: some View {
         SegmentedSelector(arr: arr, select: $selected)
+            .setRoundStyle(.ALL_ROUND)
+            .setDirection(.horizontal)
+            .setSpacing(10)
+        SegmentedSelector(arr: arr, select: $selected)
+            .setRoundStyle(.ALL_ROUND)
+            .setDirection(.vertical)
+            .setSpacing(10)
     }
 }
 
