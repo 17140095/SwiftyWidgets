@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-@available(iOS 15.0, *)
+@available(iOS 16.0, *)
 public protocol BaseProps {
     var primaryColor: Color { get set }
     var secondaryColor: Color { get set }

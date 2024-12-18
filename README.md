@@ -12,7 +12,7 @@ You can download the [SwiftyWidgets Framework](https://github.com/17140095/Swift
 
 ## Minimum Deployment
 
-iOS 15.0
+iOS 16.0
 
 ## Demo
 

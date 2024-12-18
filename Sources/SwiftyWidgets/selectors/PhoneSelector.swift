@@ -7,12 +7,8 @@
 
 import SwiftUI
 
-@available(iOS 15.0, *)
+@available(iOS 16.0, *)
 public struct PhoneSelector: View, BaseProps {
-    public enum Cache {
-        public static var country = Countries.allCountry.first
-        public static var phoneNo = ""
-    }
     
     public var primaryColor: Color = AppConfig.Selectors.PhoneSelector.primaryColor
     public var secondaryColor: Color = AppConfig.Selectors.PhoneSelector.secondaryColor
@@ -29,25 +25,33 @@ public struct PhoneSelector: View, BaseProps {
     public var arrowImage: Image = AppConfig.Selectors.PhoneSelector.arrowImage
     public var checkImage: Image = AppConfig.Selectors.PhoneSelector.checkImage
     public var background: Color = AppConfig.Selectors.PhoneSelector.background
+    public var showFlag: Bool = AppConfig.Selectors.PhoneSelector.showFlag
+    public var showDialCodeAfterArrow: Bool = AppConfig.Selectors.PhoneSelector.showDialCodeAfterArrow
     
-    var label: String
+    public var shouldDisabled: Bool = false
+    
+    var label: String = ""
     var prompt: String?
-    var shouldCache: Bool? = nil
-    var readFromCache: Bool? = nil
+    var valueKey: String = ""
+    var isValueFromMap: Bool = false
     
     
-    @Binding var phoneNo: String
+    public static var values: [String: PhoneSelectorValue] = [:]
+    @State var phoneNo: String = ""
     @State private var selectedCountry: Country?
     @State private var presentSheet = false
     @State private var phoneWithoutCode: String =  ""
     @FocusState private var keyIsFocused: Bool
     
-    public init(label: String = "", prompt: String? = nil ,phoneNo: Binding<String>) {
-        self.label = label
+    public init(key: String = "PhoneNo", prompt: String? = nil ) {
         self.prompt = prompt
-        self._phoneNo = phoneNo
+        self.valueKey = key
+        if PhoneSelector.values[valueKey] == nil {
+            PhoneSelector.values[valueKey] = PhoneSelectorValue()
+        } else {
+            self.isValueFromMap = true
+        }
         self._selectedCountry = State(initialValue: Countries.allCountry.first)
-        
     }
     public var body: some View {
         VStack (alignment: .leading){
@@ -61,12 +65,20 @@ public struct PhoneSelector: View, BaseProps {
                     presentSheet = true
                     keyIsFocused = false
                 } label: {
-                    Text(selectedCountry?.flag ?? "")
+                    if showFlag {
+                        Text(selectedCountry?.flag ?? "")
+                    }
+                    if !showDialCodeAfterArrow {
+                        Text(selectedCountry?.dial_code ?? "")
+                            .foregroundStyle(primaryColor)
+                    }
                     arrowImage
                 }
                 .foregroundStyle(primaryColor)
-                Text(selectedCountry?.dial_code ?? "")
-                    .foregroundStyle(primaryColor)
+                if showDialCodeAfterArrow {
+                    Text(selectedCountry?.dial_code ?? "")
+                        .foregroundStyle(primaryColor)
+                }
                 TextField("", text: $phoneWithoutCode)
                     .placeholder(when: phoneWithoutCode.isEmpty) {
                         Text(getPlaceholder())
@@ -78,7 +90,7 @@ public struct PhoneSelector: View, BaseProps {
                         phoneWithoutCode = String(newVal.prefix(selectedCountry?.pattern.count ?? Int.max))
                         phoneWithoutCode = phoneWithoutCode.formatNumberOn(mask: selectedCountry?.pattern ?? "")
                         phoneNo = (selectedCountry?.dial_code ?? "").appending(phoneWithoutCode)
-                        cacheSelection()
+                        saveSelection()
                     })
                     .foregroundColor(primaryColor)
                     .tint(primaryColor)
@@ -88,6 +100,7 @@ public struct PhoneSelector: View, BaseProps {
             .padding(.top, padding.top, if: style == .UNDERLINED)
             .padding(.bottom, padding.bottom, if: style == .UNDERLINED)
             .onTapGesture {
+                keyIsFocused = true
                 hideKeyboard()
             }
             .animation(.easeInOut(duration: 0.6), value: keyIsFocused)
@@ -95,7 +108,9 @@ public struct PhoneSelector: View, BaseProps {
                 NavigationView {
                     List(Countries.allCountry) { country in
                         HStack {
-                            Text(country.flag)
+                            if showFlag {
+                                Text(country.flag)
+                            }
                             Text(country.name)
                                 .foregroundStyle(textColor)
                             if country == selectedCountry {
@@ -106,6 +121,7 @@ public struct PhoneSelector: View, BaseProps {
                             Text(country.dial_code)
                                 .foregroundStyle(textColor)
                         }
+                        .background(.white.opacity(0.0001))
                         .onTapGesture {
                             selectedCountry = country
                             presentSheet = false
@@ -116,7 +132,7 @@ public struct PhoneSelector: View, BaseProps {
                 }
                 .padding(.vertical, 20)
             }
-            .disableWithOpacity(readFromCache ?? false)
+            .disableWithOpacity(shouldDisabled)
             
             if style == .UNDERLINED {
                 Rectangle()
@@ -130,9 +146,12 @@ public struct PhoneSelector: View, BaseProps {
             RoundedRectangle(cornerRadius: cornerRadius)
                 .stroke(border?.color ?? .clear, lineWidth: border?.width ?? 0)
         }
-        .onAppear{
-            if readFromCache ?? false {
-                readCache()
+        .onAppear {
+            if isValueFromMap {
+                self.phoneNo = PhoneSelector.values[valueKey]?.value ?? ""
+                self.selectedCountry = PhoneSelector.values[valueKey]?.country
+                let dialCodeCount = selectedCountry?.dial_code.count ?? 0
+                self.phoneWithoutCode = phoneNo.dropFirst(dialCodeCount - 1).description
             }
         }
     }
@@ -145,25 +164,36 @@ public struct PhoneSelector: View, BaseProps {
         }
     }
     
-    private func cacheSelection() {
-        if shouldCache ?? false {
-            Cache.country = selectedCountry
-            Cache.phoneNo = phoneWithoutCode
-        }
-    }
-    
-    private func readCache() {
-        if readFromCache ?? false {
-            selectedCountry = Cache.country
-            phoneWithoutCode = Cache.phoneNo
-        }
+    private func saveSelection() {
+        PhoneSelector.values[self.valueKey]?.value = phoneNo
+        PhoneSelector.values[self.valueKey]?.country = selectedCountry
     }
     
 }// PhoneSelector
 
-@available(iOS 15.0, *)
+@available(iOS 16.0, *)
 extension PhoneSelector {
     //setter
+    public func setshowFlag(_ show: Bool) -> Self {
+        var copy = self
+        copy.showFlag = show
+        return copy
+    }
+    public func setshowDialCodeAfterArrow(_ show: Bool) -> Self {
+        var copy = self
+        copy.showDialCodeAfterArrow = show
+        return self
+    }
+    public func shouldDisabled(_ disabled: Bool) -> Self {
+        var copy = self
+        copy.shouldDisabled = disabled
+        return copy
+    }
+    public func setLabel(_ label: String) -> Self {
+        var copy = self
+        copy.label = label
+        return copy
+    }
     public func setPrimaryColor(_ color: Color) -> Self {
         var copy = self
         copy.primaryColor = color
@@ -229,16 +259,7 @@ extension PhoneSelector {
         copy.background = color
         return copy
     }
-    public func setShouldCache(_ shouldCache: Bool = true) -> Self {
-        var copy = self
-        copy.shouldCache = shouldCache
-        return copy
-    }
-    public func setReadFromCache(_ readFromCache: Bool = true) -> Self {
-        var copy = self
-        copy.readFromCache = readFromCache
-        return copy
-    }
+    
     public func setStyle(_ style: SwiftyInputStyle) -> Self {
         var copy = self
         copy.style = style
@@ -246,25 +267,46 @@ extension PhoneSelector {
     }
 }
 
+@available(iOS 16.0, *)
+public class PhoneSelectorValue {
+    public var value: String = ""
+    public var country: Country?
+}
+
+@available(iOS 16.0, *)
+public enum PhoneSelectorDisplay {
+    case NO_FLAG
+    
+}
 
 #if DEBUG
-@available(iOS 15.0, *)
+@available(iOS 16.0, *)
 struct TestPhoneSelector: View {
     @State var text: String = ""
     @State var showAlert: Bool = false
+    init() {
+        let selector = PhoneSelectorValue()
+        selector.country = Countries.allCountry.last
+        selector.value = "\(selector.country?.dial_code ?? "")34567890"
+        PhoneSelector.values["PhoneNo"] = selector
+    }
     var body: some View {
         VStack {
-            PhoneSelector(label: "",phoneNo: $text)
+            PhoneSelector(key: "PhoneNo")
 //                .setPrimaryColor(.red)
                 .setPadding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
-            CountrySelector(select: $text)
+//                .shouldDisabled(true)
+            CountrySelector(key: "Country")
             Spacer()
+            SwiftyButton(title: "CheckValue") {
+                print((PhoneSelector.values["PhoneNo"]?.value ?? "").onlyNumbers)
+            }
         }
 //        .padding()
     }
 }
 
-@available(iOS 15.0, *)
+@available(iOS 16.0, *)
 #Preview {
     TestPhoneSelector()
 }

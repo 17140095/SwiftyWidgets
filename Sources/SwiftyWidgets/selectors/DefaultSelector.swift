@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-@available(iOS 15.0, *)
+@available(iOS 16.0, *)
 public struct DefaultSelector: View, BaseProps {
     public var primaryColor: Color = AppConfig.Selectors.InputSelector.primaryColor
     public var secondaryColor: Color = AppConfig.Selectors.InputSelector.secondaryColor
@@ -98,7 +98,7 @@ public struct DefaultSelector: View, BaseProps {
     }
 }
 
-@available(iOS 15.0, *)
+@available(iOS 16.0, *)
 extension DefaultSelector {
     public func setPrimaryColor(_ color: Color) -> Self {
         var view = self
@@ -184,7 +184,7 @@ extension DefaultSelector {
 
 #if DEBUG
 
-@available(iOS 15.0, *)
+@available(iOS 16.0, *)
 struct SelectorTestView: View {
     @State private var selectedGenderIndex = 0
     @State private var select: String = "Please select Gender"
@@ -208,7 +208,7 @@ struct SelectorTestView: View {
 }
 
 
-@available(iOS 15.0, *)
+@available(iOS 16.0, *)
 #Preview {
     SelectorTestView()
 }

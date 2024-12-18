@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-@available(iOS 15.0, *)
+@available(iOS 16.0, *)
 public struct CountrySelector: View, BaseProps {
     
     public var primaryColor: Color = AppConfig.Selectors.CountrySelector.primaryColor
@@ -32,16 +32,17 @@ public struct CountrySelector: View, BaseProps {
     public var style: SwiftyInputStyle = AppConfig.Selectors.CountrySelector.style
     
     var label: String = ""
-    var prompt: String = "Select Country"
-    @Binding var select: String
+    var prompt: String
+    public static var values: [String: String] = [:]
+    var key: String
     
     @State private var presentSheet = false
     @State private var selectedCountry = Countries.allCountry.first
     @FocusState private var keyIsFocused: Bool
     
-    public init(label: String = "", select: Binding<String>) {
-        self.label = label
-        self._select = select
+    public init(key: String = "Country", prompt: String = "Select Country") {
+        self.key = key
+        self.prompt = prompt
         self.presentSheet = presentSheet
         self.selectedCountry = selectedCountry
         self.keyIsFocused = keyIsFocused
@@ -93,19 +94,30 @@ public struct CountrySelector: View, BaseProps {
                 NavigationView {
                     List(Countries.allCountry) { country in
                         HStack {
-                            Text(country.flag + "  \(country.code)")
+                            Text(getFlagAndCodeForSheet(flag: country.flag, code: country.code))
                                 .font(font)
-                            if country == selectedCountry {
-                                checkImage
-                                    .foregroundStyle(primaryColor)
+                            if self.showCode || self.showFlag {
+                                if country == selectedCountry {
+                                    checkImage
+                                        .foregroundStyle(primaryColor)
+                                }
+                                Spacer()
+                                Text(country.name)
+                                    .foregroundStyle(textColor)
+                            } else {
+                                Text(country.name)
+                                    .foregroundStyle(textColor)
+                                if country == selectedCountry {
+                                    checkImage
+                                        .foregroundStyle(primaryColor)
+                                }
+                                Spacer()
                             }
-                            Spacer()
-                            Text(country.name)
-                                .foregroundStyle(textColor)
                         }
+                        .background(.white.opacity(0.0001))
                         .onTapGesture {
                             selectedCountry = country
-                            select = selectedCountry?.name ?? ""
+                            CountrySelector.values[key] = selectedCountry?.name ?? ""
                             presentSheet = false
                         }
                     }
@@ -133,7 +145,13 @@ public struct CountrySelector: View, BaseProps {
         }
         
     }
-    
+    private func getFlagAndCodeForSheet(flag: String, code: String) -> String {
+        var toReturn = showFlag ? flag : ""
+        if showCode {
+            toReturn += " \(code)"
+        }
+        return toReturn
+    }
     private func getFlagAndCode() -> String {
         let code = showCode ? "  \(selectedCountry?.code ?? "")" : ""
         return "\(selectedCountry?.flag ?? "")\(code)"
@@ -143,9 +161,13 @@ public struct CountrySelector: View, BaseProps {
 
 
 
-@available(iOS 15.0, *)
+@available(iOS 16.0, *)
 extension CountrySelector: BaseProps {
-    
+    public func setLabel(_ label: String) -> CountrySelector {
+        var view = self
+        view.label = label
+        return view
+    }
     public func setPrimaryColor(_ color: Color) -> CountrySelector {
         var view = self
         view.primaryColor = color
@@ -192,25 +214,30 @@ extension CountrySelector: BaseProps {
         view.style = style
         return view
     }
+    public func showFlag(_ show: Bool) -> CountrySelector {
+        var view = self
+        view.showFlag = show
+        return view
+    }
     
 }
 
 
 #if DEBUG
-@available(iOS 15.0, *)
+@available(iOS 16.0, *)
 struct TestCounntrySelector: View {
     @State var text: String = ""
     var body: some View {
         VStack {
             Spacer()
-            CountrySelector(label: "",select: $text)
+            CountrySelector(key: "Country")
             Spacer()
         }
         .background(AppConfig.backgroundColor)
     }
 }
 
-@available(iOS 15.0, *)
+@available(iOS 16.0, *)
 #Preview {
     TestCounntrySelector()
 }

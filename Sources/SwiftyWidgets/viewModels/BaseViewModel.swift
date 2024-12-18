@@ -10,23 +10,19 @@ import Foundation
 @available(iOS 13.0, *)
 public class BaseViewModel:NSObject, ObservableObject {
     @Published var isLoading: Bool = false
-    @Published var showError: Bool = false
-    @Published var isSucces = false
-    
+    @Published var showAlert: Bool = false
+    var alertTitle = "Error"
     var errorMessage = ""
-    var isErrorForSuccess: Bool = false
     
     var apiTask: URLSessionDataTask?
     
-    func showError(msg: String) {
+    func showError(msg: String, title: String = "Error") {
         self.errorMessage = msg
         self.isLoading = false
-        self.showError = true
+        self.showAlert = true
+        self.alertTitle = title
     }
     
-    func getTitle() -> String {
-        isErrorForSuccess ? "Success" : "Error"
-    }
     func cancelApiCalls() {
         apiTask?.cancel()
     }

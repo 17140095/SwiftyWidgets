@@ -10,8 +10,9 @@ import Alamofire
 
 
 @available(iOS 13.0, *)
-class BaseService: NSObject, ObservableObject {
+public class BaseService: NSObject, ObservableObject {
     var params: [String: Any] = [:]
+    public static var successCode: String = "00"
     
     func execute<T: Codable>(stringURL: String, httpMethod: HTTPMethod, completion: @escaping (ParsedResponse<T>?) -> Void) {
         guard let url = URL(string: stringURL) else {
@@ -33,13 +34,12 @@ class BaseService: NSObject, ObservableObject {
             urlRequest.printRequest()
             #endif
             AF.request(urlRequest).responseJSON { response in
+                #if DEBUG
+                print("\n\n\nResponse:------\n\(response.result)\n\n\n")
+                #endif
                 switch response.result {
                 case .success(let data):
                     if let jsonResponse = try? JSONDecoder().decode(ServiceResponse<T>.self, from: response.data!) {
-                        #if DEBUG
-                        print("\n\n\nResponse:------\n\(jsonResponse)\n\n\n")
-                        #endif
-                        
                         let parsedResponse = ParsedResponse(responseCode: jsonResponse.responseCode, responseDescription: jsonResponse.responseDescription, responsePayload: jsonResponse.responsePayload)
                         completion(parsedResponse)
                     } else {

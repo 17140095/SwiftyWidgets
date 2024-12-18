@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 
-@available(iOS 15.0, *)
+@available(iOS 16.0, *)
 public enum AppConfig {
     public static var font = Font.body
     public static var primaryColor = Color(hex: "#92C7CF")
@@ -161,6 +161,8 @@ public enum AppConfig {
             public static var arrowImage: Image = Image(systemName: "arrowtriangle.down.fill")
             public static var checkImage: Image = Image(systemName: "checkmark")
             public static var background = Color.white
+            public static var showFlag = false
+            public static var showDialCodeAfterArrow = false
         }
         
     }

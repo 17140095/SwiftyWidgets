@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-@available(iOS 15.0.0, *)
+@available(iOS 16.0, *)
 public struct ImageSelector: View, BaseProps {
     public var primaryColor: Color = AppConfig.Selectors.ImageSelector.primaryColor
     public var secondaryColor: Color = AppConfig.Selectors.ImageSelector.secondaryColor
@@ -58,7 +58,7 @@ public struct ImageSelector: View, BaseProps {
     }
 }
 
-@available(iOS 15.0.0, *)
+@available(iOS 16.0, *)
 extension ImageSelector {
     public func setPrimaryColor(_ color: Color) -> Self {
         var copy = self
@@ -114,7 +114,7 @@ extension ImageSelector {
 
 
 #if DEBUG
-@available(iOS 15.0, *)
+@available(iOS 16.0, *)
 struct TestImageSelector: View {
     @State private var select = 0
     private var images = [
@@ -140,7 +140,7 @@ struct TestImageSelector: View {
     }
 }
 
-@available(iOS 15.0, *)
+@available(iOS 16.0, *)
 #Preview {
     TestImageSelector()
 }

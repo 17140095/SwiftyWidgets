@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-@available(iOS 15.0, *)
+@available(iOS 16.0, *)
 public struct SwiftyAlert: View, BaseProps {
     public var primaryColor: Color = AppConfig.Alert.primaryColor
     public var secondaryColor: Color = AppConfig.Alert.secondaryColor
@@ -313,7 +313,7 @@ public struct SwiftyAlert: View, BaseProps {
 
 
 #if DEBUG
-@available(iOS 15.0.0, *)
+@available(iOS 16.0, *)
 public struct TestSwiftyAlert: View {
     @State private var isPresented: Bool = false
     @State private var isPresented1: Bool = false
@@ -359,7 +359,7 @@ public struct TestSwiftyAlert: View {
     }
 }
 
-@available(iOS 15.0.0, *)
+@available(iOS 16.0, *)
 #Preview {
     TestSwiftyAlert()
     

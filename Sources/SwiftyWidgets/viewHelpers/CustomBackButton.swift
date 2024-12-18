@@ -7,12 +7,12 @@
 
 import SwiftUI
 
-@available(iOS 15.0, *)
+@available(iOS 16.0, *)
 public struct CustomBackButton: ViewModifier {
     var title: String
     var onPress: (()-> Void)? = nil
     var showBtn: Bool
-    @Environment(\.presentationMode) var presentationMode
+    @EnvironmentObject var navigationControl: NavigationControl
     
     public func body(content: Content) -> some View {
         content
@@ -30,7 +30,6 @@ public struct CustomBackButton: ViewModifier {
                 }
                 
             }
-            .padding(.top, 10)
     }
     
     @ViewBuilder
@@ -57,41 +56,36 @@ public struct CustomBackButton: ViewModifier {
         if let onPress {
             onPress()
         } else {
-            self.presentationMode.wrappedValue.dismiss()
+            navigationControl.back()
         }
     }
 }
 
 #if DEBUG
 
-@available(iOS 15.0, *)
+@available(iOS 16.0, *)
 struct TestView: View {
-    @State private var isPresented = false
-    
-    init() {
-//        AppConfig.navigationBackButtonView = {
-//            AnyView(
-//                Image(systemName: "arrow.left")
-//                    .foregroundStyle(.red)
-//                    .padding()
-//                    .background(Rectangle().fill(.yellow))
-//            )
-//        }
-    }
-    
+    @StateObject private var navigationControl = NavigationControl()
     var body: some View {
-        NavigationView {
-            NavigationLink {
-                DetailView()
-            } label: {
-                Text("Go Detail view")
+        NavigationStack(path: $navigationControl.path) {
+            VStack {
+                SwiftyButton(title: "Go Detail view") {
+                    print("Go Detail view")
+                    navigationControl.next("Detail")
+                    print(navigationControl.plainPath)
+                }
             }
-
+            .navigationDestination(for: String.self) { screen in
+                if screen == "Detail" {
+                    DetailView()
+                }
+            }
         }
+        .environmentObject(navigationControl)
     }
 }
 
-@available(iOS 15.0, *)
+@available(iOS 16.0, *)
 struct DetailView: View {
     
     var body: some View {
@@ -105,7 +99,7 @@ struct DetailView: View {
         .background(AppConfig.backgroundColor)
     }
 }
-@available(iOS 15.0.0, *)
+@available(iOS 16.0, *)
 struct MyCustomBackButton: View {
     var action: () -> Void
 
@@ -123,7 +117,7 @@ struct MyCustomBackButton: View {
         }
     }
 }
-@available(iOS 15.0.0, *)
+@available(iOS 16.0, *)
 #Preview(body: {
     TestView()
 })

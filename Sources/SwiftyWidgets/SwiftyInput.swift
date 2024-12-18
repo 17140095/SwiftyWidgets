@@ -16,7 +16,7 @@ public protocol SwiftyInputProtocol {
     func onChange(_ newValue: String)
 }
 
-@available(iOS 15.0, *)
+@available(iOS 16.0, *)
 public struct SwiftyInput: View, BaseProps {
     public var primaryColor: Color = AppConfig.Inputs.primaryColor
     public var secondaryColor: Color = AppConfig.Inputs.secondaryColor
@@ -58,9 +58,10 @@ public struct SwiftyInput: View, BaseProps {
     @State var promptSize: CGSize = .zero
     var delegate: SwiftyInputProtocol?
     var placeholder: String = ""
-    
+    var label: String = ""
 
-    public init(prompt: String = "Placeholder", text: Binding<String>, delegate: SwiftyInputProtocol? = nil, isSecure: Bool = false) {
+    public init(label: String = "", prompt: String = "Placeholder", text: Binding<String>, delegate: SwiftyInputProtocol? = nil, isSecure: Bool = false) {
+        self.label = label
         self.placeholder = prompt
         self._prompt = State<String>(initialValue: prompt)
         self._text = text
@@ -70,7 +71,12 @@ public struct SwiftyInput: View, BaseProps {
     }
 
     public var body: some View {
-        VStack(spacing: 0) {
+        VStack(alignment: .leading, spacing: 0) {
+            if label.isNotEmpty{
+                Text(label)
+                    .font(font)
+                    .foregroundStyle(textColor)
+            }
             HStack (alignment: .center, spacing: 0){
                 if let leftView = leftView {
                     getOnlyIconLabel(icon: leftView)
@@ -128,7 +134,6 @@ public struct SwiftyInput: View, BaseProps {
                 }
                 
             }
-            
             //Error View/ Limit View
             if !isFocused && showError {
                 HStack() {
@@ -225,7 +230,6 @@ public struct SwiftyInput: View, BaseProps {
                                 .fgStyle(getFloatingValue() > 0.0 ? leftViewColor : placeholderColor)
                                 .onAppear{
                                     promptSize = geometry.size
-                                    print("Prompt Size: \(promptSize)")
                                 }
                         }
                     } icon: {
@@ -268,7 +272,7 @@ public struct SwiftyInput: View, BaseProps {
     }
 }
 
-@available(iOS 15.0, *)
+@available(iOS 16.0, *)
 extension SwiftyInput {
     private func onChangeText(_ value: String) {
         if limit > -1 {
@@ -302,7 +306,7 @@ extension SwiftyInput {
     
 }//SwiftyInput
 
-@available(iOS 15.0, *)
+@available(iOS 16.0, *)
 extension SwiftyInput {
     public func setPrimaryColor(_ color: Color) -> SwiftyInput {
         var view = self
@@ -443,7 +447,7 @@ extension SwiftyInput {
 }
 
 #if DEBUG
-@available(iOS 15.0, *)
+@available(iOS 16.0, *)
 struct TestContentView: View {
     @State private var text = ""
     @State private var text2 = ""
@@ -459,15 +463,16 @@ struct TestContentView: View {
                     .setStyle(.BORDERD)
                     .setShouldFloat()
 //                    .setLeftView(Image(systemName: "person"))
-                    .setFont(.largeTitle)
+//                    .setFont(.largeTitle)
                 SwiftyInput(text: $text2)
                 SwiftyInput(text: $text3)
+                    .setShouldFloat()
                 
             }
         }
     }
 }
-@available(iOS 15.0, *)
+@available(iOS 16.0, *)
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         TestContentView()
@@ -478,7 +483,7 @@ struct ContentView_Previews: PreviewProvider {
 #endif
 
 
-@available(iOS 15.0, *)
+@available(iOS 16.0, *)
 fileprivate struct SwiftyInputLabelStyle: LabelStyle {
     fileprivate var font: Font
     fileprivate var isMandatory: Bool

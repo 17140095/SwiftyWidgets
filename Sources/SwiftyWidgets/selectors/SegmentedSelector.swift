@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-@available(iOS 15.0.0, *)
+@available(iOS 16.0, *)
 public struct SegmentedSelector: View, BaseProps {
     public var primaryColor: Color = AppConfig.Selectors.SegmentedSelector.primaryColor
     public var secondaryColor: Color = AppConfig.Selectors.SegmentedSelector.secondaryColor
@@ -26,7 +26,7 @@ public struct SegmentedSelector: View, BaseProps {
     @Binding var select: Int
     
     
-    init(arr: [String], select: Binding<Int>) {
+    public init(arr: [String], select: Binding<Int>) {
         self.arr = arr
         self._select = select
     }
@@ -110,7 +110,7 @@ public struct SegmentedSelector: View, BaseProps {
     }
 }
 
-@available(iOS 15.0.0, *)
+@available(iOS 16.0, *)
 extension SegmentedSelector {
     public func setPrimaryColor(_ color: Color) -> Self {
         var copy = self
@@ -173,14 +173,14 @@ extension SegmentedSelector {
     }
 }
 
-@available(iOS 15.0, *)
+@available(iOS 16.0, *)
 public enum PickerRoundStyle {
     case ALL_ROUND
     case SIDE_ROUND
     case NO_ROUND
 }
 
-@available(iOS 15.0, *)
+@available(iOS 16.0, *)
 fileprivate struct MyRectangle: Shape {
     var radius: CGFloat
     var corners: UIRectCorner
@@ -194,7 +194,7 @@ fileprivate struct MyRectangle: Shape {
 
 #if DEBUG
 
-@available(iOS 15.0, *)
+@available(iOS 16.0, *)
 struct TestSegmented: View {
     
     let arr = ["Easy", "Hard", "Not Possible"]
@@ -212,7 +212,7 @@ struct TestSegmented: View {
     }
 }
 
-@available(iOS 15.0, *)
+@available(iOS 16.0, *)
 #Preview{
     TestSegmented()
 }

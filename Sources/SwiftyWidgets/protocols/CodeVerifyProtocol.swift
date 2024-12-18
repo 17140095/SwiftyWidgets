@@ -8,8 +8,6 @@
 import Foundation
 
 public protocol CodeVerifyProtocol {
-    func verifyCode(code: String, codeType: CodeVerificationBy)
-    func resendCode(codeType: CodeVerificationBy)
-    func verifyCode(code: String, codeType: CodeVerificationBy, completion: @escaping (Bool) -> Void)
-    func resendCode(codeType: CodeVerificationBy, completion: @escaping (Bool) -> Void)
+    func verifyCode(emailCode: String?, phoneCode: String?)
+    func sendCode(completion: @escaping () -> Void)
 }

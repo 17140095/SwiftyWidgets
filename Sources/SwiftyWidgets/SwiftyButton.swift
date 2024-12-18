@@ -10,7 +10,7 @@ public enum SwiftyButtonIconPos {
     case LEFT, RIGHT, TOP, BOTTOM
 }
 
-@available(iOS 15.0.0, *)
+@available(iOS 16.0, *)
 public struct SwiftyButton: View, BaseProps {
     public var primaryColor: Color = AppConfig.primaryColor
     public var secondaryColor: Color = AppConfig.secondaryColor
@@ -26,6 +26,7 @@ public struct SwiftyButton: View, BaseProps {
     public var showOnlyIcon: Bool = false
     public var style: any LabelStyle
     public var effect: (any ButtonStyle)? = nil
+    public var shouldMaxWidth: Bool = true
     
     public let title: String
     public let onPress: ()-> Void
@@ -50,7 +51,9 @@ public struct SwiftyButton: View, BaseProps {
     private func buildFilledOutlineView() -> some View {
        
         HStack(spacing: 0) {
-            Spacer()
+            if shouldMaxWidth {
+                Spacer()
+            }
                 Label {
                     Text(showOnlyIcon ? "" : title)
                 } icon: {
@@ -62,9 +65,11 @@ public struct SwiftyButton: View, BaseProps {
                 }
                 .font(font)
                 .labelStyle(SwiftyButtonLabelStyle(iconPos: iconPos, showOnlyIcon: showOnlyIcon, iconSpacing: iconSpacing))
-            Spacer()
+            if shouldMaxWidth {
+                Spacer()
+            }
         }
-        .padding(padding)
+        .padding(padding, if: shouldMaxWidth)
         .font(font)
         .contentShape(RoundedRectangle(cornerRadius: cornerRadius))
         .background(primaryColor)
@@ -151,9 +156,15 @@ public struct SwiftyButton: View, BaseProps {
         }
         return view
     }
+    
+    public func setShouldMaxWidth(_ shouldMaxWidth: Bool) -> SwiftyButton {
+        var view = self
+        view.shouldMaxWidth = shouldMaxWidth
+        return view
+    }
 }//SwiftyButton1
 
-@available(iOS 15.0, *)
+@available(iOS 16.0, *)
 fileprivate struct SwiftyButtonLabelStyle: LabelStyle {
     
     private var iconPos: SwiftyButtonIconPos
@@ -201,7 +212,7 @@ fileprivate struct SwiftyButtonLabelStyle: LabelStyle {
     }
 }
 
-@available(iOS 15.0.0, *)
+@available(iOS 16.0, *)
 fileprivate struct ScaleEffectStyle: ButtonStyle {
 
     private var font: Font
@@ -222,7 +233,7 @@ fileprivate struct ScaleEffectStyle: ButtonStyle {
 }
 
 #if DEBUG
-@available(iOS 15.0, *)
+@available(iOS 16.0, *)
 #Preview{
     VStack {
         SwiftyButton(title: "filled") {

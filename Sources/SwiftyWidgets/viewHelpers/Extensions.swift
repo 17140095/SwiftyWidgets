@@ -8,23 +8,74 @@
 import Foundation
 import SwiftUI
 
-extension String {
+extension Array {
+    var isNotEmpty: Bool {
+        !self.isEmpty
+    }
+}
+
+extension Dictionary {
     public var isNotEmpty: Bool {
         !self.isEmpty
     }
-    public var trim: String {
-        self.trimmingCharacters(in: .whitespacesAndNewlines)
+    public mutating func addAll(newValues: [Key : Value]) {
+        for key in newValues.keys {
+            self[key] = newValues[key]
+        }
     }
     
+    public func toJson(pretty: Bool = true) -> String? {
+        do {
+            let options: JSONSerialization.WritingOptions = pretty ? .prettyPrinted : []
+            let jsonData = try JSONSerialization.data(withJSONObject: self, options: options)
+            return String(data: jsonData, encoding: .utf8)
+        } catch {
+            print("Error converting dictionary to JSON: \(error.localizedDescription)")
+        }
+        return nil
+    }
+}
+
+extension Dictionary where Key == String {
+    mutating public func addKeyPrefix(_ prefix: String) {
+        var prefixedDict: [String: Value] = [:]
+        
+        for (key, value) in self {
+            let newKey = "\(prefix)\(key)"
+            prefixedDict[newKey] = value
+        }
+        self = prefixedDict
+    }
+}
+
+
+extension String {
+    var firstCharCapitalized: String {
+        guard self.isNotEmpty else {
+            return self
+        }
+        return self.prefix(1).uppercased() + self.dropFirst().lowercased()
+    }
+    var onlyNumbers: Int? {
+        Int(components(separatedBy: CharacterSet.decimalDigits.inverted).joined())
+    }
+    var trim: String {
+        self.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+    var isNotEmpty: Bool {
+        !self.isEmpty
+    }
     public var isBlank: Bool {
         self.trim.isEmpty
     }
-    public var isEmail: Bool {
-        let emailRegex = #"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"#
-        let emailPredicate = NSPredicate(format: "SELF MATCHES %@", emailRegex)
-        return emailPredicate.evaluate(with: self)
+    func isEqual(with: String, ignoreCase: Bool = false)-> Bool {
+        ignoreCase ? self.lowercased() == with.lowercased() : self == with
     }
-    public func formatNumberOn(mask: String = "(###) ###-####", replaceChar: Character = "#") -> String {
+    func charAt(index offset: Int) -> String  {
+        let index = self.index(self.startIndex, offsetBy: offset)
+        return String(self[index])
+    }
+    func formatNumberOn(mask: String = "(###) ###-####", replaceChar: Character = "#") -> String {
         let cleanNumber = components(separatedBy: CharacterSet.decimalDigits.inverted).joined()
         
         var result = ""
@@ -41,6 +92,46 @@ extension String {
         }
         
         return result
+    }
+    
+    public func isEmail()-> Bool {
+        let emailRegex = #"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"#
+        let emailPredicate = NSPredicate(format: "SELF MATCHES %@", emailRegex)
+        return emailPredicate.evaluate(with: self)
+    }
+    
+    public func maskEmail()-> String {
+        guard self.isEmail() else {
+            return self
+        }
+        let parts = self.components(separatedBy: "@")
+        let firstPart = parts[0]
+        let secondPart = parts[1]
+        let masked = String(firstPart.prefix(2)) + "*****" + String(firstPart.suffix(2))
+        return masked + "@" + secondPart
+    }
+    public func maskPhoneNumber()-> String {
+        let cleanNumber = components(separatedBy: CharacterSet.decimalDigits.inverted).joined()
+        let masked = String(cleanNumber.prefix(2)) + "*****" + String(cleanNumber.suffix(2))
+        return masked
+    }
+    
+    func isHTML() -> Bool {
+        let htmlRegex = #"(<\s*([A-Za-z][A-Za-z0-9]*)\b[^>]*>(.*?)<\s*/\s*\2\s*>)|(<\s*([A-Za-z][A-Za-z0-9]*)\b[^>]*/?>)"#
+        guard let regex = try? NSRegularExpression(pattern: htmlRegex, options: []) else {
+            return false
+        }
+        
+        let range = NSRange(location: 0, length: self.utf16.count)
+        return regex.firstMatch(in: self, options: [], range: range) != nil
+    }
+    
+    func openURL() {
+        if let url = URL(string: self) {
+            UIApplication.shared.open(url)
+        } else {
+            print("This string is not URL to open")
+        }
     }
 }
 
@@ -175,7 +266,7 @@ extension Color {
     }
 }
 
-@available(iOS 15.0, *)
+@available(iOS 16.0, *)
 extension View {
     public func hideKeyboard() {
         let resign = #selector(UIResponder.resignFirstResponder)
@@ -359,7 +450,7 @@ extension View {
             }
         }
     }
-    func customBackButton(title: String = "", onPress: (()-> Void)? = nil, showBtn: Bool = true) -> some View {
+    func customBackButton(title: String = "", showBtn: Bool = true, onPress: (()-> Void)? = nil) -> some View {
         modifier(CustomBackButton(title: title,onPress: onPress, showBtn: showBtn))
     }
     @ViewBuilder func border<S>(_ content: S, width: CGFloat = 1, if condition: Bool) -> some View where S : ShapeStyle {
@@ -396,7 +487,34 @@ extension View {
             self
         }
     }
-    
+    @_disfavoredOverload
+    @ViewBuilder public func onChange<V>(of value: V, do action: @escaping (V) -> Void) -> some View where V: Equatable {
+        if #available(iOS 14, *) {
+            onChange(of: value, perform: action)
+        } else {
+            modifier(ChangeObserver(newValue: value, action: action))
+        }
+    }
+    @ViewBuilder
+    func cardView(_ padding: EdgeInsets, radius: CGFloat = 20, bgColor: Color = .white)-> some View {
+        Group {
+            self
+        }
+        .padding(padding)
+        .background(bgColor)
+        .clipShape(RoundedRectangle(cornerRadius: radius))
+        .shadow(props: ShadowProps())
+
+    }
+    @ViewBuilder
+    func cardView(_ padding: CGFloat = 16, radius: CGFloat = 20, bgColor: Color = .white)-> some View {
+        Group {
+            self
+        }
+        .padding(padding)
+        .background(bgColor)
+        .clipShape(RoundedRectangle(cornerRadius: radius))
+    }
     @ViewBuilder public func swiftyAlert<V: View>(isPresented: Binding<Bool>, content: ()-> V) -> some View {
         if isPresented.wrappedValue {
             ZStack {

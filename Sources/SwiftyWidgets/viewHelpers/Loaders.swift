@@ -21,7 +21,7 @@ public struct Loader: View {
     }
 }
 
-@available(iOS 15.0, *)
+@available(iOS 16.0, *)
 open class LoadingViews {
     private var loaders: [String: Loader] = [:]
     private var key: String = "Default"
