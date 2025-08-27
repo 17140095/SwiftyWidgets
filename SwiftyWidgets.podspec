@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'SwiftyWidgets'
-  s.version          = '1.0.7'
+  s.version          = '1.0.8'
   s.summary          = 'Swifty widgets library for swiftUI projects'
   s.description      = <<-DESC
                         There are list of widgets available for this project
