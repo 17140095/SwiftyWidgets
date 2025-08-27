@@ -7,53 +7,13 @@
 
 import SwiftUI
 
-@available(iOS 13.0, *)
-public struct Loader: View {
-    public let key: String
-    public let content: AnyView
-    
-    public init(key: String, content: AnyView) {
-        self.key = key
-        self.content = content
-    }
-    public var body: some View {
-        content
-    }
-}
-
 @available(iOS 15.0, *)
-open class LoadingViews {
-    private var loaders: [String: Loader] = [:]
-    private var key: String = "Default"
-    
-    private static var instance: LoadingViews = LoadingViews()
+public class Loaders {
+    private static var loaderList = [String: AnyView]()
+    private static var loaderKey = "Default"
     
     private init() {
-        loaders[key] = getDefaultLoader()
-    }
-    
-    public static func getInstance() -> LoadingViews {
-        return instance
-    }
-    
-    public func addLoader( shouldSet: Bool = true, _ loader: Loader) {
-        
-        self.loaders[loader.key] = loader
-        if shouldSet {
-            self.key = loader.key
-        }
-    }
-    
-    public func getLoader(key: String? = nil) -> Loader? {
-        if let key = key {
-            return loaders[key]
-        } else {
-            return loaders[self.key]
-        }
-    }
-    
-    private func getDefaultLoader() -> Loader {
-        Loader(key: "Default", content: AnyView(
+        Loaders.loaderList[Loaders.loaderKey] = AnyView(
             VStack {
                 ProgressView()
                     .progressViewStyle(CircularProgressViewStyle())
@@ -63,16 +23,29 @@ open class LoadingViews {
                     .cornerRadius(10)
             }
             .transition(.opacity)
-        ))
+        )
+    }
+    public static func addLoader(key: String, view: AnyView, makeKeyDefault: Bool = false) {
+        loaderList[key] = view
+    }
+    public static func getLoader(key: String? = nil) -> AnyView {
+        if let key = key, let loader = loaderList[key] {
+            return loader
+        } else if let loader = loaderList[loaderKey] {
+            return loader
+        } else {
+            return AnyView(EmptyView())
+        }
     }
 }
 
+
 #if DEBUG
 
-@available(iOS 13.0, *)
+@available(iOS 15.0, *)
 struct Loading_Previews: PreviewProvider {
     static var previews: some View {
-        Loader(key: "test", content: AnyView(Text("Loader")))
+        Loaders.getLoader()
     }
 }
 
