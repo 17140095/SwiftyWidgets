@@ -1,3 +1,9 @@
+## Swifty Widgets
+[![CI Status](https://img.shields.io/travis/17140095/SwiftyWidgets.svg?style=flat)](https://travis-ci.org/17140095/SwiftyWidgets)
+[![Version](https://img.shields.io/cocoapods/v/SwiftyWidgets.svg?style=flat)](https://cocoapods.org/pods/SwiftyWidgets)
+[![License](https://img.shields.io/cocoapods/l/SwiftyWidgets.svg?style=flat)](https://cocoapods.org/pods/SwiftyWidgets)
+[![Platform](https://img.shields.io/cocoapods/p/SwiftyWidgets.svg?style=flat)](https://cocoapods.org/pods/SwiftyWidgets)
+
 <p align="center">
 <img src="https://github.com/17140095/SwiftyWidgets/blob/main/Sources/SwiftyWidgets/screenshots/SwiftyWidgetIcon.png" width="204"/>
 </p>
