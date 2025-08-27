@@ -28,7 +28,11 @@ Copy SwiftyWidget package URL
 ```
 https://github.com/17140095/SwiftyWidgets
 ```
-
+### Pod
+Change the pod file of your SwiftUI project by adding this dependency
+```
+pod 'SwiftyWidgets', '~> 1.0.0'
+```
 
 ## Questions?
 
