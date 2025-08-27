@@ -20,6 +20,9 @@ Pod::Spec.new do |s|
   s.author           = { 'Ali Raza' => '17140095@gift.edu.pk' }
   s.source           = { :git => 'https://github.com/17140095/SwiftyWidgets.git', :tag => s.version.to_s }
 
+  # This is the important part - specifying dependencies
+  s.dependency 'Alamofire', '~> 5.6'
+
   # Swift version and platform
   s.swift_version    = '5.9'
   s.ios.deployment_target = '15.0'
