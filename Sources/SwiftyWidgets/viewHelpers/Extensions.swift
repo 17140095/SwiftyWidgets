@@ -352,7 +352,7 @@ extension View {
                 .blur(radius: isLoading.wrappedValue ? 3 : 0)
             
             if isLoading.wrappedValue {
-                LoadingViews.getInstance().getLoader()
+                Loaders.getLoader()
             }
         }
     }
