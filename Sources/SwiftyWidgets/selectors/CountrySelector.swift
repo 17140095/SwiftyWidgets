@@ -8,7 +8,7 @@
 import SwiftUI
 
 @available(iOS 15.0, *)
-public struct CountrySelector: View, BaseProps {
+public struct CountrySelector: View {
     
     public var primaryColor: Color = AppConfig.Selectors.CountrySelector.primaryColor
     public var secondaryColor: Color = AppConfig.secondaryColor
@@ -144,7 +144,7 @@ public struct CountrySelector: View, BaseProps {
 
 
 @available(iOS 15.0, *)
-extension CountrySelector: BaseProps {
+extension CountrySelector {
     
     public func setPrimaryColor(_ color: Color) -> CountrySelector {
         var view = self

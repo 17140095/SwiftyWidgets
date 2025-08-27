@@ -12,7 +12,7 @@ let package = Package(
             targets: ["SwiftyWidgets"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/Alamofire/Alamofire.git", from: "5.9.1"),
+        .package(url: "https://github.com/Alamofire/Alamofire.git", branch: "https://github.com/Alamofire/Alamofire/tree/5.4.3"),
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.

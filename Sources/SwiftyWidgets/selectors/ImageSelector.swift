@@ -8,7 +8,7 @@
 import SwiftUI
 
 @available(iOS 15.0.0, *)
-public struct ImageSelector: View, BaseProps {
+public struct ImageSelector: View {
     public var primaryColor: Color = AppConfig.Selectors.ImageSelector.primaryColor
     public var secondaryColor: Color = AppConfig.Selectors.ImageSelector.secondaryColor
     public var border: BorderProps? = AppConfig.Selectors.ImageSelector.border

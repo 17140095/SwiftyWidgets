@@ -8,7 +8,7 @@
 import SwiftUI
 
 @available(iOS 15.0.0, *)
-public struct SegmentedSelector: View, BaseProps {
+public struct SegmentedSelector: View {
     public var primaryColor: Color = AppConfig.Selectors.SegmentedSelector.primaryColor
     public var secondaryColor: Color = AppConfig.Selectors.SegmentedSelector.secondaryColor
     public var border: BorderProps? = AppConfig.Selectors.SegmentedSelector.border

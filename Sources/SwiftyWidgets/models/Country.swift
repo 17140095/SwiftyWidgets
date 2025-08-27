@@ -7,6 +7,7 @@
 
 import Foundation
 
+@available(iOS 15.0, *)
 public struct Country: Codable, Identifiable, Equatable {
     public let id: String
     public let name: String
@@ -21,8 +22,9 @@ public struct Country: Codable, Identifiable, Equatable {
     }
 }
 
+@available(iOS 15.0, *)
 public struct Countries {
-    public static let allCountry: [Country] = Bundle.module.decode("CountryNumbers.json")
+    public static let allCountry: [Country] = ResourceHelper.decode("CountryNumbers.json")
     
     public static func allCountryNames() -> [String] {
         allCountry.map { country in

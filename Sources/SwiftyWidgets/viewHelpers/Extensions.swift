@@ -177,6 +177,7 @@ extension Color {
 
 @available(iOS 15.0, *)
 extension View {
+    
     public func hideKeyboard() {
         let resign = #selector(UIResponder.resignFirstResponder)
         UIApplication.shared.sendAction(resign, to: nil, from: nil, for: nil)
@@ -266,11 +267,7 @@ extension View {
     }
     
     @ViewBuilder public func fgStyle(_ style: Color) -> some View{
-        if #available(iOS 15.0, *) {
-            self.foregroundStyle(style)
-        } else {
-            self.foregroundColor(style)
-        }
+        self.foregroundStyle(style)
     }
     
     @ViewBuilder public func tintColor(_ color: Color) -> some View {

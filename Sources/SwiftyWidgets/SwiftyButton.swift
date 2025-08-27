@@ -11,7 +11,7 @@ public enum SwiftyButtonIconPos {
 }
 
 @available(iOS 15.0.0, *)
-public struct SwiftyButton: View, BaseProps {
+public struct SwiftyButton: View {
     public var primaryColor: Color = AppConfig.primaryColor
     public var secondaryColor: Color = AppConfig.secondaryColor
     public var border: BorderProps? = AppConfig.Buttons.borderProps

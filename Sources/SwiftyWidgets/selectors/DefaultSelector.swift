@@ -8,7 +8,7 @@
 import SwiftUI
 
 @available(iOS 15.0, *)
-public struct DefaultSelector: View, BaseProps {
+public struct DefaultSelector: View {
     public var primaryColor: Color = AppConfig.Selectors.InputSelector.primaryColor
     public var secondaryColor: Color = AppConfig.Selectors.InputSelector.secondaryColor
     public var border: BorderProps? = AppConfig.Selectors.InputSelector.border

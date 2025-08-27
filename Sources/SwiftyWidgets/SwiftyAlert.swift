@@ -8,7 +8,7 @@
 import SwiftUI
 
 @available(iOS 15.0, *)
-public struct SwiftyAlert: View, BaseProps {
+public struct SwiftyAlert: View {
     public var primaryColor: Color = AppConfig.Alert.primaryColor
     public var secondaryColor: Color = AppConfig.Alert.secondaryColor
     public var border: BorderProps? = nil

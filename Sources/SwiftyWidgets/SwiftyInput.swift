@@ -17,7 +17,7 @@ public protocol SwiftyInputProtocol {
 }
 
 @available(iOS 15.0, *)
-public struct SwiftyInput: View, BaseProps {
+public struct SwiftyInput: View {
     public var primaryColor: Color = AppConfig.Inputs.primaryColor
     public var secondaryColor: Color = AppConfig.Inputs.secondaryColor
     public var border: BorderProps? = AppConfig.Inputs.border
@@ -155,7 +155,7 @@ public struct SwiftyInput: View, BaseProps {
     
     private func getFloatingValue() -> CGFloat {
         var floatHeight: CGFloat = promptSize.height
-        if let leftView {
+        if leftView != nil {
             floatHeight = leftViewSize.height + 3
         }
         return shouldFloat && (isFocused || !text.isEmpty) ? -floatHeight : 0
@@ -168,7 +168,7 @@ public struct SwiftyInput: View, BaseProps {
     
     private func getBorderFloatValue() -> CGFloat {
         var floatX: CGFloat = promptSize.height/2
-        if let leftView {
+        if leftView != nil {
             floatX = leftViewSize.width/2
         }
         return style == .BORDERD && shouldFloat && (isFocused || text.isNotEmpty) ? floatX : 0.0

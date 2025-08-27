@@ -21,7 +21,7 @@ Pod::Spec.new do |s|
   s.source           = { :git => 'https://github.com/17140095/SwiftyWidgets.git', :tag => s.version.to_s }
 
   # This is the important part - specifying dependencies
-  s.dependency 'Alamofire', '5.10.2'
+  s.dependency 'Alamofire', '5.4.3'
 
   # Swift version and platform
   s.swift_version    = '5.9'
@@ -31,5 +31,5 @@ Pod::Spec.new do |s|
   s.source_files     = 'Sources/**/*.{swift}'
 
   # If you have resources (images, nibs, etc.)
-  # s.resources      = 'Sources/SwiftyWidgets/Resources/**/*'
+  s.resources      = 'Sources/SwiftyWidgets/Resources/*.json'
 end

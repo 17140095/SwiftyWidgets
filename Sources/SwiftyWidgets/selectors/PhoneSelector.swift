@@ -8,7 +8,7 @@
 import SwiftUI
 
 @available(iOS 15.0, *)
-public struct PhoneSelector: View, BaseProps {
+public struct PhoneSelector: View {
     public enum Cache {
         public static var country = Countries.allCountry.first
         public static var phoneNo = ""
