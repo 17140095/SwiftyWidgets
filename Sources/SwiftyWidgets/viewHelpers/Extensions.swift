@@ -345,6 +345,7 @@ extension View {
         }
     }
     
+    @ViewBuilder
     public func showLoading(isLoading: Binding<Bool>) -> some View {
         ZStack {
             self // Original content

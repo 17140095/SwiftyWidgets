@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 
 @available(iOS 15.0, *)
-public enum AppConfig {
+public struct AppConfig {
     public static var font = Font.body
     public static var primaryColor = Color(hex: "#92C7CF")
     public static var secondaryColor = Color(hex: "#E5E1DA")
